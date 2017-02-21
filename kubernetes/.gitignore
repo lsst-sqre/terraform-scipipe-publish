@@ -1,2 +1,3 @@
 service_ip.txt
 bin/
+ssl-proxy-secrets.yaml
