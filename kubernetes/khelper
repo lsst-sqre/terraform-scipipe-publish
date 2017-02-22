@@ -79,6 +79,7 @@ kube_resources() {
   local action=${1:-create}
   local configs
   configs=(
+    s3sync-secret.yaml
     ssl-proxy-secrets.yaml
     ssl-proxy-service.yaml
     ssl-proxy-rc.yaml
