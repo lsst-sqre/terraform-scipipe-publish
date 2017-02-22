@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+print_error() {
+  >&2 echo -e "$@"
+}
+
+fail() {
+  print_error "$@"
+  exit 1
+}
+
+get_secret() {
+  local name="$1"
+
+  local sfile="/etc/secrets/${name}"
+  [[ ! -r $sfile ]] && fail "can not read ${sfile}"
+
+  # oh ya, bash 4.x baby!
+  local var_name="${name^^}"
+  local sdata
+  sdata=$(<"$sfile")
+
+  eval "export ${var_name}=${sdata}"
+}
+
+get_secret AWS_ACCESS_KEY_ID
+get_secret AWS_SECRET_ACCESS_KEY
+get_secret S3_BUCKET
+
+aws s3 sync --delete "s3://${S3_BUCKET}" /var/www/html
