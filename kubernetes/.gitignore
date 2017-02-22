@@ -1,3 +1,4 @@
 service_ip.txt
 bin/
 ssl-proxy-secrets.yaml
+s3sync-secret.yaml
