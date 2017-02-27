@@ -1,0 +1,17 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: eups-volume
+  # this may not be working, at least under 1.4.8
+  annotations:
+    pv.beta.kubernetes.io/gid: "4242"
+spec:
+  capacity:
+    storage: 1024Gi
+  # https://kubernetes.io/docs/user-guide/persistent-volumes/#access-modes
+  accessModes:
+    - ReadWriteOnce
+  # https://kubernetes.io/docs/resources-reference/v1.5/#gcepersistentdiskvolumesource-v1
+  gcePersistentDisk:
+    pdName: "eups-disk"
+    fsType: "ext4"
