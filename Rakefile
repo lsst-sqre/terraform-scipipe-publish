@@ -8,15 +8,33 @@ rule '.yaml' => '.eyaml' do |t|
   sh "eyaml decrypt -f #{t.source} > #{t.name}"
 end
 
+def sh_quiet(script)
+  sh script do |ok, res|
+    unless ok
+      # exit without verbose rake error message
+      exit res.exitstatus
+    end
+  end
+end
+
+def tf_cmd(env, name, arg)
+  task name do
+    sh_quiet <<-EOS
+      cd terraform/#{env}
+      ../bin/terraform #{arg}
+    EOS
+  end
+end
+
 namespace :eyaml do
   desc 'generate new eyaml keys'
   task :createkeys do |t|
-    sh "eyaml #{t}"
+    sh_quiet "eyaml #{t}"
   end
 
   desc 'setup default sqre keyring'
   task :sqre do |t|
-    sh <<-EOS
+    sh_quiet <<-EOS
       mkdir -p .lsst-certs
       cd .lsst-certs
       git init
@@ -42,56 +60,110 @@ end
 namespace :terraform do
   desc 'download terraform'
   task :install do
-    sh <<-EOS
+    sh_quiet <<-EOS
       cd terraform
       make
     EOS
   end
 
-  desc 'write s3sync secrets data from tf state'
-  task :s3sync do
-    require 'json'
-    require 'yaml'
-    require 'base64'
+  namespace :s3 do
+    env = 's3'
 
-    ABS_PATH = File.expand_path(File.dirname(__FILE__))
-    TF_STATE= "#{ABS_PATH}/terraform/s3/terraform.tfstate"
+    desc 'apply'
+    tf_cmd(env, :apply, 'apply')
+    desc 'destroy'
+    tf_cmd(env, :destroy, 'destroy -force')
 
-    fail "missing terraform state file: #{TF_STATE}" unless File.exist? TF_STATE
-    outputs = JSON.parse(File.read(TF_STATE))["modules"].first["outputs"]
-    outputs = case outputs.first[1]
-    when Array
-      # tf ~ 0.6
-      outputs.map {|k,v| [k, v]}.to_h
-    when Hash
-      # tf >= 0.8 ?
-      outputs.map {|k,v| [k, v['value']]}.to_h
+    desc 'write s3sync secrets data from tf state'
+    task 's3sync-secret' do
+      require 'json'
+      require 'yaml'
+      require 'base64'
+
+      ABS_PATH = File.expand_path(File.dirname(__FILE__))
+      TF_STATE= "#{ABS_PATH}/terraform/s3/terraform.tfstate"
+
+      fail "missing terraform state file: #{TF_STATE}" unless File.exist? TF_STATE
+      outputs = JSON.parse(File.read(TF_STATE))["modules"].first["outputs"]
+      outputs = case outputs.first[1]
+      when Array
+        # tf ~ 0.6
+        outputs.map {|k,v| [k, v]}.to_h
+      when Hash
+        # tf >= 0.8 ?
+        outputs.map {|k,v| [k, v['value']]}.to_h
+      end
+
+      secrets = {
+        'apiVersion' => 'v1',
+        'kind'       => 'Secret',
+        'metadata'   => {
+          'name' => 's3sync-secret'
+        },
+      }
+
+      secrets['data'] = {
+        'AWS_ACCESS_KEY_ID' =>
+          Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']),
+        'AWS_SECRET_ACCESS_KEY' =>
+          Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']),
+        'S3_BUCKET' =>
+          Base64.encode64(outputs['EUPS_S3_BUCKET']),
+      }
+
+      doc = YAML.dump secrets
+      puts doc
+      File.write('./kubernetes/s3sync-secret.yaml', doc)
     end
+  end # :s3
 
-    secrets = {
-      'apiVersion' => 'v1',
-      'kind'       => 'Secret',
-      'metadata'   => {
-        'name' => 's3sync-secret'
-      },
-    }
+  namespace :dns do
+    env = 'dns'
 
-    secrets['data'] = {
-      'AWS_ACCESS_KEY_ID' =>
-        Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']),
-      'AWS_SECRET_ACCESS_KEY' =>
-        Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']),
-      'S3_BUCKET' =>
-        Base64.encode64(outputs['EUPS_S3_BUCKET']),
-    }
+    desc 'apply'
+    tf_cmd(env, :apply, 'apply')
+    desc 'destroy'
+    tf_cmd(env, :destroy, 'destroy -force')
+  end # :dns
+end
 
-    doc = YAML.dump secrets
-    puts doc
-    File.write('./kubernetes/s3sync-secret.yaml', doc)
+namespace :gcloud do
+  desc 'create gce storage disk'
+  task :disk do
+    sh_quiet <<-EOS
+      gcloud compute disks create --size 1024GB eups-disk
+    EOS
   end
 end
 
+def khelper_cmd(arg)
+  task arg.to_sym do
+    sh_quiet <<-EOS
+      cd kubernetes
+      ./khelper #{arg}
+    EOS
+  end
+end
+
+namespace :khelper do
+  desc 'create kubeneretes resources'
+  khelper_cmd 'create'
+
+  desc 'write service_ip.txt'
+  khelper_cmd 'ip'
+
+  desc 'delete kubernetes resources'
+  khelper_cmd 'delete'
+end
+
 task :default => [
-  :terraform,
+  'terraform:install',
   'eyaml:decrypt',
+]
+
+desc 'destroy all tf/kube resources'
+task :destroy => [
+  'khelper:delete',
+  'terraform:dns:destroy',
+  'terraform:s3:destroy',
 ]
