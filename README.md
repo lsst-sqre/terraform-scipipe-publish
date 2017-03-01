@@ -11,6 +11,9 @@ tl;dr
     bundle exec rake eyaml:decrypt
     bundle exec rake gcloud:disk
     bundle exec rake terraform:install
+    # production only
+    bundle exec rake terraform:remote
+    # /production only
     bundle exec rake terraform:s3:apply
     bundle exec rake terraform:s3:s3sync-secret
     bundle exec rake khelper:create
@@ -43,9 +46,18 @@ Note that `creds.sh` will need to be manually edited unless these env vars are p
 
     bundle exec rake gcloud:disk
 
-### create s3 bucket + iam role users
+### create s3 bucket
 
     bundle exec rake terraform:install
+
+### configure tf remote state on s3 bucekt
+
+__Note that this is only nessicary for a production deployment.__
+
+    bundle exec rake terraform:remote
+
+### create iam role users
+
     bundle exec rake terraform:s3:apply
 
 ### write s3 access kubernetes secrets

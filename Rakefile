@@ -17,14 +17,50 @@ def sh_quiet(script)
   end
 end
 
-def tf_cmd(env, name, arg)
+def tf_cmd(deploy, name, arg)
   task name do
     sh_quiet <<-EOS
-      cd terraform/#{env}
+      cd terraform/#{deploy}
       ../bin/terraform get
       ../bin/terraform #{arg}
     EOS
   end
+end
+
+def tf_bucket_region
+  "us-west-2"
+end
+
+def tf_bucket
+  env = ENV['TF_VAR_env_name']
+
+  if env.nil?
+    abort('env var TF_VAR_env_name must be defined')
+  end
+
+  if env == 'prod'
+    env = 'eups'
+  else
+    env = "#{env}-eups"
+  end
+
+  "#{env}.lsst.codes-tf"
+end
+
+def tf_remote(deploy)
+  desc 'configure remote state'
+
+  task 'remote' do
+    remote = 'remote config -backend=s3' +
+      " -backend-config=\"region=#{tf_bucket_region}\"" +
+      " -backend-config=\"bucket=#{tf_bucket}\"" +
+      " -backend-config=\"key=#{deploy}/terraform.tfstate\""
+
+      sh_quiet <<-EOS
+        cd terraform/#{deploy}
+        ../bin/terraform #{remote}
+      EOS
+    end
 end
 
 namespace :eyaml do
@@ -59,6 +95,13 @@ namespace :eyaml do
 end
 
 namespace :terraform do
+  namespace :bucket do
+    desc 'create s3 bucket to hold remote state'
+    task :create do
+     sh_quiet "aws s3 mb s3://#{tf_bucket} --region #{tf_bucket_region}"
+    end
+  end
+
   desc 'download terraform'
   task :install do
     sh_quiet <<-EOS
@@ -67,13 +110,21 @@ namespace :terraform do
     EOS
   end
 
+  desc 'configure remote state on s3 bucket'
+  task :remote => [
+    'terraform:bucket:create',
+    'terraform:dns:remote',
+    'terraform:s3:remote',
+  ]
+
   namespace :s3 do
-    env = 's3'
+    deploy = 's3'
 
     desc 'apply'
-    tf_cmd(env, :apply, 'apply')
+    tf_cmd(deploy, :apply, 'apply')
     desc 'destroy'
-    tf_cmd(env, :destroy, 'destroy -force')
+    tf_cmd(deploy, :destroy, 'destroy -force')
+    tf_remote(deploy)
 
     desc 'write s3sync secrets data from tf state'
     task 's3sync-secret' do
@@ -123,12 +174,13 @@ namespace :terraform do
   end # :s3
 
   namespace :dns do
-    env = 'dns'
+    deploy = 'dns'
 
     desc 'apply'
-    tf_cmd(env, :apply, 'apply')
+    tf_cmd(deploy, :apply, 'apply')
     desc 'destroy'
-    tf_cmd(env, :destroy, 'destroy -force')
+    tf_cmd(deploy, :destroy, 'destroy -force')
+    tf_remote(deploy)
   end # :dns
 end
 
