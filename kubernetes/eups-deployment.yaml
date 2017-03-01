@@ -1,16 +1,18 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: eups-deployment
+  name: &name eups
+  labels: &labels
+    name: *name
+    app: eups
 spec:
   replicas: 1
   template:
     metadata:
-      labels:
-        name: eups
+      labels: *labels
     spec:
       containers:
-        - name: eups
+        - name: apache
           imagePullPolicy: "Always"
           image: "eboraas/apache"
           ports:

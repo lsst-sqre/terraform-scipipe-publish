@@ -1,7 +1,10 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: eups-volume
+  name: &name eups-volume
+  labels:
+    name: *name
+    app: eups
   # this may not be working, at least under 1.4.8
   annotations:
     pv.beta.kubernetes.io/gid: "4242"

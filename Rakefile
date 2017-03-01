@@ -98,7 +98,11 @@ namespace :terraform do
         'apiVersion' => 'v1',
         'kind'       => 'Secret',
         'metadata'   => {
-          'name' => 's3sync-secret'
+          'name'   => 's3sync-secret',
+          'labels' => {
+            'name' => 's3sync-secret',
+            'app'  => 'eups',
+          },
         },
       }
 

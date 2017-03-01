@@ -6,24 +6,21 @@
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: nginx-ssl-proxy
-  labels:
-    name: nginx-ssl-proxy
+  name: &name nginx-ssl-proxy
+  labels: &labels
+    name: *name
     role: ssl-proxy
+    app: eups
 spec:
   replicas: 1
-  selector:
-    name: nginx-ssl-proxy
-    role: ssl-proxy
+  selector: *labels
   template:
     metadata:
-      name: nginx-ssl-proxy
-      labels:
-        name: nginx-ssl-proxy
-        role: ssl-proxy
+      name: *name
+      labels: *labels
     spec:
       containers:
-      - name: nginx-ssl-proxy
+      - name: *name
         image: "gcr.io/cloud-solutions-images/nginx-ssl-proxy:master-9979ee3"
         command:
           - /bin/bash

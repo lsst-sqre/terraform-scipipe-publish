@@ -1,7 +1,10 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: eups-pvc
+  name: &name eups-pvc
+  labels:
+    name: *name
+    app: eups
 spec:
   accessModes:
     - ReadWriteOnce

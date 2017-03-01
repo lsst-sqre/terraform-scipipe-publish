@@ -6,14 +6,13 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: nginx-ssl-proxy
-  labels:
-    name: nginx-ssl-proxy
+  name: &name nginx-ssl-proxy
+  labels: &labels
+    name: *name
     role: ssl-proxy
+    app: eups
 spec:
-  selector:
-    name: nginx-ssl-proxy
-    role: ssl-proxy
+  selector: *labels
   type: LoadBalancer
   ports:
   - name: https
