@@ -21,6 +21,7 @@ def tf_cmd(env, name, arg)
   task name do
     sh_quiet <<-EOS
       cd terraform/#{env}
+      ../bin/terraform get
       ../bin/terraform #{arg}
     EOS
   end
