@@ -108,6 +108,10 @@ kube_create_resources() {
   kube_resources 'create'
 }
 
+kube_apply_resources() {
+  kube_resources 'apply'
+}
+
 kube_delete_resources() {
   kube_resources 'delete'
 }
@@ -132,6 +136,7 @@ usage() {
   print_error
   print_error 'Supported <mode>s:'
   print_error '   create      create kubernetes resources'
+  print_error '   apply       apply  kubernetes resources'
   print_error '   delete      delete kubernetes resources'
   print_error '   ip          print/write external service IP'
   exit 1
@@ -145,6 +150,10 @@ case $1 in
     kube_create_namespace
     kube_set_namespace eups
     kube_create_resources
+    service_ip_write
+    ;;
+  apply)
+    kube_apply_resources
     service_ip_write
     ;;
   delete)

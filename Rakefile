@@ -153,6 +153,9 @@ namespace :khelper do
   desc 'create kubeneretes resources'
   khelper_cmd 'create'
 
+  desc 'apply kubeneretes resources'
+  khelper_cmd 'apply'
+
   desc 'write service_ip.txt'
   khelper_cmd 'ip'
 
