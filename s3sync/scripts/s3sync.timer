@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodically run s3sync
+
+[Timer]
+OnUnitActiveSec=
+OnCalendar=*:*:0/30
+Persistent=true
+
+[Install]
+WantedBy=timers.target

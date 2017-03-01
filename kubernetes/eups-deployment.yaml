@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: eups-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: eups
+    spec:
+      containers:
+        - name: eups
+          imagePullPolicy: "Always"
+          image: "eboraas/apache"
+          ports:
+            - name: eups-apache
+              containerPort: 80
+          volumeMounts:
+            - name: eups-storage
+              mountPath: /var/www/html
+
+        - name: s3sync
+          imagePullPolicy: "Always"
+          image: "lsstsqre/s3sync"
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: s3sync-secrets
+              mountPath: /etc/secrets
+              readOnly: true
+            - name: eups-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: eups-storage
+          persistentVolumeClaim:
+            claimName: eups-pvc
+        - name: s3sync-secrets
+          secret:
+            secretName: s3sync-secret
