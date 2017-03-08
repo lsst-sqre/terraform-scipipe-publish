@@ -31,7 +31,7 @@ def tf_bucket_region
   "us-west-2"
 end
 
-def tf_bucket
+def env_prefix
   env = ENV['TF_VAR_env_name']
 
   if env.nil?
@@ -44,7 +44,11 @@ def tf_bucket
     env = "#{env}-eups"
   end
 
-  "#{env}.lsst.codes-tf"
+  env
+end
+
+def tf_bucket
+  "#{env_prefix}.lsst.codes-tf"
 end
 
 def tf_remote(deploy)
@@ -188,7 +192,7 @@ namespace :gcloud do
   desc 'create gce storage disk'
   task :disk do
     sh_quiet <<-EOS
-      gcloud compute disks create --size 1024GB eups-disk
+      gcloud compute disks create --size 1024GB #{env_prefix}-disk
     EOS
   end
 end
@@ -214,6 +218,45 @@ namespace :khelper do
 
   desc 'delete kubernetes resources'
   khelper_cmd 'delete'
+end
+
+namespace :kube do
+  desc 'write kubernetes PersistentVolume config'
+  task 'write-pv' do
+    require 'yaml'
+
+    # https://kubernetes.io/docs/user-guide/persistent-volumes/#access-modes
+    # https://kubernetes.io/docs/resources-reference/v1.5/#gcepersistentdiskvolumesource-v1
+    pv = {
+      'kind'       => 'PersistentVolume',
+      'apiVersion' => 'v1',
+      'metadata'   => {
+        'name'        => 'eups-volume',
+        'labels'      => {
+          'name' => 'eups-volume',
+          'app'  => 'eups',
+        },
+        # this may not be working, at least under 1.4.8
+        'annotations' => {
+          'pv.beta.kubernetes.io/gid'=>'4242',
+        }
+      },
+      'spec'       => {
+        'capacity'          => {
+          'storage' => '1024Gi',
+        },
+        'accessModes'       => ['ReadWriteOnce'],
+        'gcePersistentDisk' => {
+          'pdName' => "#{env_prefix}-disk",
+          'fsType' => 'ext4',
+        }
+      }
+    }
+
+    doc = YAML.dump pv
+    puts doc
+    File.write('./kubernetes/eups-pv.yaml', doc)
+  end
 end
 
 desc 'write creds.sh'
