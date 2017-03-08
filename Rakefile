@@ -136,18 +136,9 @@ namespace :terraform do
       require 'yaml'
       require 'base64'
 
-      ABS_PATH = File.expand_path(File.dirname(__FILE__))
-      TF_STATE= "#{ABS_PATH}/terraform/s3/terraform.tfstate"
-
-      fail "missing terraform state file: #{TF_STATE}" unless File.exist? TF_STATE
-      outputs = JSON.parse(File.read(TF_STATE))["modules"].first["outputs"]
-      outputs = case outputs.first[1]
-      when Array
-        # tf ~ 0.6
-        outputs.map {|k,v| [k, v]}.to_h
-      when Hash
-        # tf >= 0.8 ?
-        outputs.map {|k,v| [k, v['value']]}.to_h
+      outputs = nil
+      Dir.chdir('terraform/s3') do
+        outputs = JSON.parse(`../bin/terraform output -json`)
       end
 
       secrets = {
@@ -164,11 +155,11 @@ namespace :terraform do
 
       secrets['data'] = {
         'AWS_ACCESS_KEY_ID' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']),
+          Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']['value']),
         'AWS_SECRET_ACCESS_KEY' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']),
+          Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']['value']),
         'S3_BUCKET' =>
-          Base64.encode64(outputs['EUPS_S3_BUCKET']),
+          Base64.encode64(outputs['EUPS_S3_BUCKET']['value']),
       }
 
       doc = YAML.dump secrets
