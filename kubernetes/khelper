@@ -1,0 +1,172 @@
+#!/bin/bash
+
+#
+# XXX this script is intended to be compabile with OSX, which means we're stuck
+# with bash 3.x
+#
+
+set -e
+
+SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+BIN_DIR="${SCRIPT_DIR}/bin"
+KUBE_DIR="${SCRIPT_DIR}"
+SERVICE_IP_FILE="${SCRIPT_DIR}/service_ip.txt"
+
+jq_url() {
+  local jq_url
+
+  case $(uname -s) in
+    Linux*)
+      jq_url='https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64'
+      ;;
+    Darwin*)
+      jq_url='https://github.com/stedolan/jq/releases/download/jq-1.5/jq-osx-amd64'
+      ;;
+    *)
+      echo "unsupported platform $(uname -s)"
+      exit 1
+      ;;
+  esac
+
+  echo $jq_url
+}
+
+jq_install() {
+  if [[ ! -e "${BIN_DIR}/jq" ]]; then
+    mkdir -p "$BIN_DIR"
+    ( set -e
+      cd "$BIN_DIR"
+      curl --silent -L --output jq "$(jq_url)"
+      chmod a+x jq
+    )
+  fi
+}
+
+kube_context() {
+  kubectl config view | awk '/current-context/ {print $2}'
+}
+
+kube_ssl_ip() {
+  jq_install
+
+  kubectl get service nginx-ssl-proxy -o json | \
+    "${BIN_DIR}/jq" '.status.loadBalancer.ingress[0].ip' --raw-output
+}
+
+kube_namespace() {
+  local action=${1:-create}
+  ( set -e
+    cd "$KUBE_DIR"
+    kubectl "$action" -f eups-namespace.yaml
+  )
+}
+
+kube_create_namespace() {
+  kube_namespace 'create'
+}
+
+kube_delete_namespace() {
+  kube_namespace 'delete'
+}
+
+kube_set_namespace() {
+  local context
+  context=$(kube_context)
+  kubectl config set-context "$context" --namespace="$1"
+}
+
+kube_resources() {
+  local action=${1:-create}
+  local configs
+  configs=(
+    s3sync-secret.yaml
+    ssl-proxy-secrets.yaml
+    ssl-proxy-service.yaml
+    ssl-proxy-rc.yaml
+    eups-pv.yaml
+    eups-pvc.yaml
+    eups-service.yaml
+    eups-deployment.yaml
+  )
+
+  ( set -e
+    local errors=0
+    cd "$KUBE_DIR"
+    for c in "${configs[@]}"; do
+      # attempt to operate on all config files before propegating an error
+      set +e
+      if ! kubectl "$action" -f "$c"; then
+        errors+=1
+      fi
+      set +e
+    done
+    [[ $errors -gt 0 ]] && exit 1
+  )
+}
+
+kube_create_resources() {
+  kube_resources 'create'
+}
+
+kube_apply_resources() {
+  kube_resources 'apply'
+}
+
+kube_delete_resources() {
+  kube_resources 'delete'
+}
+
+service_ip_write() {
+  local ip
+  ip=$(kube_ssl_ip)
+  echo "$ip" > "$SERVICE_IP_FILE"
+  echo "$ip"
+}
+
+print_error() {
+  >&2 echo -e "$@"
+}
+
+usage() {
+  if [[ ! -z "$1" ]]; then
+    print_error "$0: $1"
+  fi
+  print_error
+  print_error "Usage: $0 <mode>"
+  print_error
+  print_error 'Supported <mode>s:'
+  print_error '   create      create kubernetes resources'
+  print_error '   apply       apply  kubernetes resources'
+  print_error '   delete      delete kubernetes resources'
+  print_error '   ip          print/write external service IP'
+  exit 1
+}
+
+[[ ${#@} == 0 ]] && usage '<mode> is required'
+[[ ${#@} -gt 1 ]] && usage 'too many arguments'
+
+case $1 in
+  create)
+    kube_create_namespace
+    kube_set_namespace eups
+    kube_create_resources
+    service_ip_write
+    ;;
+  apply)
+    kube_apply_resources
+    service_ip_write
+    ;;
+  delete)
+    ( set +e
+      kube_delete_resources
+      kube_delete_namespace
+      kube_set_namespace default
+    )
+    ;;
+  ip)
+    service_ip_write
+    ;;
+  *)
+    usage "unknown <mode>: $1"
+    ;;
+esac
