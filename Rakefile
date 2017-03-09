@@ -250,6 +250,38 @@ namespace :kube do
   end
 end
 
+namespace :jenkins do
+  desc 'print jenkins hiera yaml'
+  task 'creds' do
+    require 'yaml'
+    require 'json'
+
+    outputs = nil
+    Dir.chdir('terraform/s3') do
+      outputs = JSON.parse(`../bin/terraform output -json`)
+    end
+
+    creds = {
+      'aws-eups-push' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'UsernamePasswordCredentialsImpl',
+        'description' => 'push EUPS packages -> s3',
+        'username'    => outputs['EUPS_PUSH_AWS_ACCESS_KEY_ID']['value'],
+        'password'    => outputs['EUPS_PUSH_AWS_SECRET_ACCESS_KEY']['value'],
+      },
+      'eups-push-bucket' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'StringCredentialsImpl',
+        'description' => 'name of EUPS s3 bucket',
+        'secret'      => outputs['EUPS_S3_BUCKET']['value'],
+      },
+    }
+    puts YAML.dump(creds)
+  end
+end
+
 desc 'write creds.sh'
 task :creds do
   File.write('creds.sh', <<-EOS.gsub(/^\s+/, '')
