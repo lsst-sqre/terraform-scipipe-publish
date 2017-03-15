@@ -8,6 +8,11 @@ rule '.yaml' => '.eyaml' do |t|
   sh "eyaml decrypt -f #{t.source} > #{t.name}"
 end
 
+def gcloud_disk_size
+  # in GiB
+  '4048'
+end
+
 def sh_quiet(script)
   sh script do |ok, res|
     unless ok
@@ -183,7 +188,7 @@ namespace :gcloud do
   desc 'create gce storage disk'
   task :disk do
     sh_quiet <<-EOS
-      gcloud compute disks create --size 4096GB #{env_prefix}-disk
+      gcloud compute disks create --size #{gcloud_disk_size}GB #{env_prefix}-disk
     EOS
   end
 end
@@ -234,7 +239,7 @@ namespace :kube do
       },
       'spec'       => {
         'capacity'          => {
-          'storage' => '1024Gi',
+          'storage' => "#{gcloud_disk_size}Gi",
         },
         'accessModes'       => ['ReadWriteOnce'],
         'gcePersistentDisk' => {
