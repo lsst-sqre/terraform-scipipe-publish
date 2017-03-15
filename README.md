@@ -9,7 +9,7 @@ tl;dr
     . creds.sh
     bundle exec rake eyaml:sqre
     bundle exec rake eyaml:decrypt
-    bundle rake kube:write-pv
+    bundle exec rake kube:write-pv
     bundle exec rake gcloud:disk
     bundle exec rake terraform:install
     # production only
