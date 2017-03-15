@@ -31,7 +31,7 @@ def tf_bucket_region
   "us-west-2"
 end
 
-def tf_bucket
+def env_prefix
   env = ENV['TF_VAR_env_name']
 
   if env.nil?
@@ -44,7 +44,11 @@ def tf_bucket
     env = "#{env}-eups"
   end
 
-  "#{env}.lsst.codes-tf"
+  env
+end
+
+def tf_bucket
+  "#{env_prefix}.lsst.codes-tf"
 end
 
 def tf_remote(deploy)
@@ -132,18 +136,9 @@ namespace :terraform do
       require 'yaml'
       require 'base64'
 
-      ABS_PATH = File.expand_path(File.dirname(__FILE__))
-      TF_STATE= "#{ABS_PATH}/terraform/s3/terraform.tfstate"
-
-      fail "missing terraform state file: #{TF_STATE}" unless File.exist? TF_STATE
-      outputs = JSON.parse(File.read(TF_STATE))["modules"].first["outputs"]
-      outputs = case outputs.first[1]
-      when Array
-        # tf ~ 0.6
-        outputs.map {|k,v| [k, v]}.to_h
-      when Hash
-        # tf >= 0.8 ?
-        outputs.map {|k,v| [k, v['value']]}.to_h
+      outputs = nil
+      Dir.chdir('terraform/s3') do
+        outputs = JSON.parse(`../bin/terraform output -json`)
       end
 
       secrets = {
@@ -160,11 +155,11 @@ namespace :terraform do
 
       secrets['data'] = {
         'AWS_ACCESS_KEY_ID' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']),
+          Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']['value']),
         'AWS_SECRET_ACCESS_KEY' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']),
+          Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']['value']),
         'S3_BUCKET' =>
-          Base64.encode64(outputs['EUPS_S3_BUCKET']),
+          Base64.encode64(outputs['EUPS_S3_BUCKET']['value']),
       }
 
       doc = YAML.dump secrets
@@ -188,7 +183,7 @@ namespace :gcloud do
   desc 'create gce storage disk'
   task :disk do
     sh_quiet <<-EOS
-      gcloud compute disks create --size 1024GB eups-disk
+      gcloud compute disks create --size 4096GB #{env_prefix}-disk
     EOS
   end
 end
@@ -214,6 +209,77 @@ namespace :khelper do
 
   desc 'delete kubernetes resources'
   khelper_cmd 'delete'
+end
+
+namespace :kube do
+  desc 'write kubernetes PersistentVolume config'
+  task 'write-pv' do
+    require 'yaml'
+
+    # https://kubernetes.io/docs/user-guide/persistent-volumes/#access-modes
+    # https://kubernetes.io/docs/resources-reference/v1.5/#gcepersistentdiskvolumesource-v1
+    pv = {
+      'kind'       => 'PersistentVolume',
+      'apiVersion' => 'v1',
+      'metadata'   => {
+        'name'        => 'eups-volume',
+        'labels'      => {
+          'name' => 'eups-volume',
+          'app'  => 'eups',
+        },
+        # this may not be working, at least under 1.4.8
+        'annotations' => {
+          'pv.beta.kubernetes.io/gid'=>'4242',
+        }
+      },
+      'spec'       => {
+        'capacity'          => {
+          'storage' => '1024Gi',
+        },
+        'accessModes'       => ['ReadWriteOnce'],
+        'gcePersistentDisk' => {
+          'pdName' => "#{env_prefix}-disk",
+          'fsType' => 'ext4',
+        }
+      }
+    }
+
+    doc = YAML.dump pv
+    puts doc
+    File.write('./kubernetes/eups-pv.yaml', doc)
+  end
+end
+
+namespace :jenkins do
+  desc 'print jenkins hiera yaml'
+  task 'creds' do
+    require 'yaml'
+    require 'json'
+
+    outputs = nil
+    Dir.chdir('terraform/s3') do
+      outputs = JSON.parse(`../bin/terraform output -json`)
+    end
+
+    creds = {
+      'aws-eups-push' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'UsernamePasswordCredentialsImpl',
+        'description' => 'push EUPS packages -> s3',
+        'username'    => outputs['EUPS_PUSH_AWS_ACCESS_KEY_ID']['value'],
+        'password'    => outputs['EUPS_PUSH_AWS_SECRET_ACCESS_KEY']['value'],
+      },
+      'eups-push-bucket' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'StringCredentialsImpl',
+        'description' => 'name of EUPS s3 bucket',
+        'secret'      => outputs['EUPS_S3_BUCKET']['value'],
+      },
+    }
+    puts YAML.dump(creds)
+  end
 end
 
 desc 'write creds.sh'
