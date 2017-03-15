@@ -183,7 +183,7 @@ namespace :gcloud do
   desc 'create gce storage disk'
   task :disk do
     sh_quiet <<-EOS
-      gcloud compute disks create --size 1024GB #{env_prefix}-disk
+      gcloud compute disks create --size 4096GB #{env_prefix}-disk
     EOS
   end
 end
