@@ -3,7 +3,7 @@ terraform {
 }
 
 module "push-user" {
-  source = "./iam_user"
+  source = "../modules/iam_user"
 
   name = "${var.env_name}-eups-push"
 
@@ -35,7 +35,7 @@ EOF
 }
 
 module "pull-user" {
-  source = "./iam_user"
+  source = "../modules/iam_user"
 
   name = "${var.env_name}-eups-pull"
 
