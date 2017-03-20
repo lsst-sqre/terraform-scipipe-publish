@@ -1,3 +1,7 @@
+terraform {
+  backend "s3" {}
+}
+
 resource "aws_route53_record" "eups-www" {
   zone_id = "${var.aws_zone_id}"
 

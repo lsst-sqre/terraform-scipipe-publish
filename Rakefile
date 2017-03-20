@@ -60,10 +60,13 @@ def tf_remote(deploy)
   desc 'configure remote state'
 
   task 'remote' do
-    remote = 'remote config -backend=s3' +
+    remote = 'init' +
+      " -backend=true" +
       " -backend-config=\"region=#{tf_bucket_region}\"" +
       " -backend-config=\"bucket=#{tf_bucket}\"" +
-      " -backend-config=\"key=#{deploy}/terraform.tfstate\""
+      " -backend-config=\"key=#{deploy}/terraform.tfstate\"" +
+      " -input=false" +
+      " -get=true"
 
       sh_quiet <<-EOS
         cd terraform/#{deploy}
