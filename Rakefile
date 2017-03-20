@@ -127,6 +127,7 @@ namespace :terraform do
     'terraform:bucket:create',
     'terraform:dns:remote',
     'terraform:s3:remote',
+    'terraform:doxygen:remote',
   ]
 
   namespace :s3 do
@@ -185,6 +186,16 @@ namespace :terraform do
     tf_cmd(deploy, :destroy, 'destroy -force')
     tf_remote(deploy)
   end # :dns
+
+  namespace :doxygen  do
+    deploy = 'doxygen'
+
+    desc 'apply'
+    tf_cmd(deploy, :apply, 'apply')
+    desc 'destroy'
+    tf_cmd(deploy, :destroy, 'destroy -force')
+    tf_remote(deploy)
+  end # :doxygen
 end
 
 namespace :gcloud do
@@ -258,16 +269,22 @@ namespace :kube do
   end
 end
 
+def tf_output(path)
+  output = nil
+  Dir.chdir(path) do
+    output = JSON.parse(`../bin/terraform output -json`)
+  end
+  output
+end
+
 namespace :jenkins do
   desc 'print jenkins hiera yaml'
   task 'creds' do
     require 'yaml'
     require 'json'
 
-    outputs = nil
-    Dir.chdir('terraform/s3') do
-      outputs = JSON.parse(`../bin/terraform output -json`)
-    end
+    s3_output  = tf_output('terraform/s3')
+    dox_output = tf_output('terraform/doxygen')
 
     creds = {
       'aws-eups-push' => {
@@ -275,15 +292,30 @@ namespace :jenkins do
         'scope'       => 'GLOBAL',
         'impl'        => 'UsernamePasswordCredentialsImpl',
         'description' => 'push EUPS packages -> s3',
-        'username'    => outputs['EUPS_PUSH_AWS_ACCESS_KEY_ID']['value'],
-        'password'    => outputs['EUPS_PUSH_AWS_SECRET_ACCESS_KEY']['value'],
+        'username'    => s3_output['EUPS_PUSH_AWS_ACCESS_KEY_ID']['value'],
+        'password'    => s3_output['EUPS_PUSH_AWS_SECRET_ACCESS_KEY']['value'],
       },
       'eups-push-bucket' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',
         'impl'        => 'StringCredentialsImpl',
         'description' => 'name of EUPS s3 bucket',
-        'secret'      => outputs['EUPS_S3_BUCKET']['value'],
+        'secret'      => s3_output['EUPS_S3_BUCKET']['value'],
+      },
+      'aws-doxygen-push' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'UsernamePasswordCredentialsImpl',
+        'description' => 'push doxygen builds -> s3',
+        'username'    => dox_output['DOXYGEN_PUSH_AWS_ACCESS_KEY_ID']['value'],
+        'password'    => dox_output['DOXYGEN_PUSH_AWS_SECRET_ACCESS_KEY']['value'],
+      },
+      'doxygen-push-bucket' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'StringCredentialsImpl',
+        'description' => 'name of doxygen s3 bucket',
+        'secret'      => dox_output['DOXYGEN_S3_BUCKET']['value'],
       },
     }
     puts YAML.dump(creds)
@@ -314,4 +346,5 @@ task :destroy => [
   'khelper:delete',
   'terraform:dns:destroy',
   'terraform:s3:destroy',
+  'terraform:doxygen:destroy',
 ]
