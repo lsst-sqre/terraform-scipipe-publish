@@ -21,6 +21,12 @@ tl;dr
     bundle exec rake khelper:ip
     bundle exec rake terraform:dns:apply
 
+    # doxygen s3 bucket
+    bundle exec rake terraform:doxygen:apply
+
+    # yaml for jenkins puppet hiera configuration
+    bundle exec rake jenkins:creds
+
 Deployment
 ---
 

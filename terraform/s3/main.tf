@@ -1,7 +1,12 @@
+terraform {
+  backend "s3" {}
+}
+
 module "push-user" {
-  source = "./iam_user"
+  source = "../modules/iam_user"
 
   name = "${var.env_name}-eups-push"
+
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -30,9 +35,10 @@ EOF
 }
 
 module "pull-user" {
-  source = "./iam_user"
+  source = "../modules/iam_user"
 
   name = "${var.env_name}-eups-pull"
+
   policy = <<EOF
 {
   "Version": "2012-10-17",
