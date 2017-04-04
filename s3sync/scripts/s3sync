@@ -29,4 +29,7 @@ get_secret AWS_ACCESS_KEY_ID
 get_secret AWS_SECRET_ACCESS_KEY
 get_secret S3_BUCKET
 
-aws s3 sync --delete "s3://${S3_BUCKET}" /var/www/html
+WWW_ROOT='/var/www/html'
+
+aws s3 sync --delete "s3://${S3_BUCKET}" "$WWW_ROOT"
+find "$WWW_ROOT" -depth -type d -empty -delete
