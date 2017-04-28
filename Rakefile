@@ -202,7 +202,7 @@ namespace :gcloud do
   desc 'create gce storage disk'
   task :disk do
     sh_quiet <<-EOS
-      gcloud compute disks create --size #{gcloud_disk_size}GB #{env_prefix}-disk
+      gcloud compute disks create --type pd-ssd --size #{gcloud_disk_size}GB #{env_prefix}-disk
     EOS
   end
 end
