@@ -254,6 +254,21 @@ namespace :jenkins do
         'description' => 'name of EUPS s3 bucket',
         'secret'      => s3_output['EUPS_S3_BUCKET']['value'],
       },
+      'aws-eups-backup' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'UsernamePasswordCredentialsImpl',
+        'description' => 'backup EUPS s3 bucket -> s3 bucket',
+        'username'    => s3_output['EUPS_BACKUP_AWS_ACCESS_KEY_ID']['value'],
+        'password'    => s3_output['EUPS_BACKUP_AWS_SECRET_ACCESS_KEY']['value'],
+      },
+      'eups-backup-bucket' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'StringCredentialsImpl',
+        'description' => 'name of EUPS backup s3 bucket',
+        'secret'      => s3_output['EUPS_BACKUP_S3_BUCKET']['value'],
+      },
       'aws-doxygen-push' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',

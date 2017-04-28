@@ -29,3 +29,21 @@ output "EUPS_PULL_AWS_SECRET_ACCESS_KEY" {
   sensitive = true
   value     = "${module.pull-user.secret}"
 }
+
+output "EUPS_BACKUP_S3_BUCKET" {
+  value = "${aws_s3_bucket.eups-backup.id}"
+}
+
+output "EUPS_BACKUP_USER" {
+  value = "${module.backup-user.name}"
+}
+
+output "EUPS_BACKUP_AWS_ACCESS_KEY_ID" {
+  sensitive = true
+  value     = "${module.backup-user.id}"
+}
+
+output "EUPS_BACKUP_AWS_SECRET_ACCESS_KEY" {
+  sensitive = true
+  value     = "${module.backup-user.secret}"
+}
