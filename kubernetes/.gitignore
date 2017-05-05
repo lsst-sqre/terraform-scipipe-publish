@@ -1,4 +1,5 @@
 bin/
+eups-pvc.yaml
 eups-pv.yaml
 s3sync-secret.yaml
 service_ip.txt

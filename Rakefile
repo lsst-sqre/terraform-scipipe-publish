@@ -10,7 +10,7 @@ end
 
 def gcloud_disk_size
   # in GiB
-  '4048'
+  '512'
 end
 
 def sh_quiet(script)
@@ -202,7 +202,7 @@ namespace :gcloud do
   desc 'create gce storage disk'
   task :disk do
     sh_quiet <<-EOS
-      gcloud compute disks create --size #{gcloud_disk_size}GB #{env_prefix}-disk
+      gcloud compute disks create --type pd-ssd --size #{gcloud_disk_size}GB #{env_prefix}-disk
     EOS
   end
 end
@@ -266,6 +266,31 @@ namespace :kube do
     doc = YAML.dump pv
     puts doc
     File.write('./kubernetes/eups-pv.yaml', doc)
+
+    pvc = {
+      'kind' => 'PersistentVolumeClaim',
+      'apiVersion' => 'v1',
+      'metadata' => {
+        'name' => 'eups-pvc',
+        'labels' => {
+          'name' => 'eups-pvc',
+          'app' => 'eups',
+        },
+      },
+      'spec' => {
+        'accessModes' => [ 'ReadWriteOnce' ],
+        'resources' => {
+          'requests' => {
+            'storage' => "#{gcloud_disk_size}Gi",
+          },
+        },
+      },
+    }
+
+    doc = YAML.dump pvc
+    puts doc
+    File.write('./kubernetes/eups-pvc.yaml', doc)
+
   end
 end
 
