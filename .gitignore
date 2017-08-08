@@ -1,3 +1,4 @@
 .bundle/
-.lsst-certs/
+creds.sh
 keys
+.lsst-certs/
