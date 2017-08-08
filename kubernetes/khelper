@@ -11,6 +11,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
 BIN_DIR="${SCRIPT_DIR}/bin"
 KUBE_DIR="${SCRIPT_DIR}"
 SERVICE_IP_FILE="${SCRIPT_DIR}/service_ip.txt"
+K8S_NAMESPACE=eups
 
 jq_url() {
   local jq_url
@@ -57,7 +58,7 @@ kube_namespace() {
   local action=${1:-create}
   ( set -e
     cd "$KUBE_DIR"
-    kubectl "$action" -f eups-namespace.yaml
+    kubectl "$action" -f "${K8S_NAMESPACE}-namespace.yaml"
   )
 }
 
@@ -148,11 +149,15 @@ usage() {
 case $1 in
   create)
     kube_create_namespace
-    kube_set_namespace eups
+    kube_set_namespace $K8S_NAMESPACE
     kube_create_resources
     service_ip_write
     ;;
+  ns)
+    kube_set_namespace $K8S_NAMESPACE
+    ;;
   apply)
+    kube_set_namespace $K8S_NAMESPACE
     kube_apply_resources
     service_ip_write
     ;;
