@@ -21,10 +21,7 @@ spec:
     spec:
       containers:
       - name: *name
-        image: "gcr.io/cloud-solutions-images/nginx-ssl-proxy:master-9979ee3"
-        command:
-          - /bin/bash
-          - /usr/bin/start.sh
+        image: "docker.io/lsstsqre/nginx-ssl-proxy:latest"
         env:
           # see:
           # https://github.com/GoogleCloudPlatform/nginx-ssl-proxy/blob/master/start.sh
