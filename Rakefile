@@ -5,7 +5,7 @@ CLEAN.include(EYAML_FILES.ext('.yaml'))
 
 rule '.yaml' => '.eyaml' do |t|
   puts "#{t.name} #{t.source}"
-  sh "eyaml decrypt -f #{t.source} > #{t.name}"
+  sh "bundle exec eyaml decrypt -f #{t.source} > #{t.name}"
 end
 
 def gcloud_disk_size
@@ -78,7 +78,7 @@ end
 namespace :eyaml do
   desc 'generate new eyaml keys'
   task :createkeys do |t|
-    sh_quiet "eyaml #{t}"
+    sh_quiet "bundle exec eyaml #{t}"
   end
 
   desc 'setup default sqre keyring'
@@ -101,7 +101,7 @@ namespace :eyaml do
 
   desc 'edit .eyaml file (requires keys)'
   task :edit, [:file] do |t, args|
-    sh "eyaml edit #{args[:file]}"
+    sh "bundle exec eyaml edit #{args[:file]}"
     Rake::Task['eyaml:decrypt'].invoke
   end
 end
