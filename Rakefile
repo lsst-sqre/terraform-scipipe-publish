@@ -75,6 +75,11 @@ def tf_remote(deploy)
     end
 end
 
+def b64(text)
+  # Base64.encode64 will append unwanted newlines
+  Base64.encode64(text).strip!
+end
+
 namespace :eyaml do
   desc 'generate new eyaml keys'
   task :createkeys do |t|
@@ -164,11 +169,11 @@ namespace :terraform do
 
       secrets['data'] = {
         'AWS_ACCESS_KEY_ID' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']['value']),
+          b64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']['value']),
         'AWS_SECRET_ACCESS_KEY' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']['value']),
+          b64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']['value']),
         'S3_BUCKET' =>
-          Base64.encode64(outputs['EUPS_S3_BUCKET']['value']),
+          b64(outputs['EUPS_S3_BUCKET']['value']),
       }
 
       doc = YAML.dump secrets
