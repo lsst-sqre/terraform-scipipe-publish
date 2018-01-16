@@ -8,11 +8,6 @@ rule '.yaml' => '.eyaml' do |t|
   sh "bundle exec eyaml decrypt -f #{t.source} > #{t.name}"
 end
 
-def gcloud_disk_size
-  # in GiB
-  '512'
-end
-
 def sh_quiet(script)
   sh script do |ok, res|
     unless ok
@@ -203,15 +198,6 @@ namespace :terraform do
   end # :doxygen
 end
 
-namespace :gcloud do
-  desc 'create gce storage disk'
-  task :disk do
-    sh_quiet <<-EOS
-      gcloud compute disks create --type pd-ssd --size #{gcloud_disk_size}GB #{env_prefix}-disk
-    EOS
-  end
-end
-
 def khelper_cmd(arg)
   task arg.to_sym do
     sh_quiet <<-EOS
@@ -233,70 +219,6 @@ namespace :khelper do
 
   desc 'delete kubernetes resources'
   khelper_cmd 'delete'
-end
-
-namespace :kube do
-  desc 'write kubernetes PersistentVolume config'
-  task 'write-pv' do
-    require 'yaml'
-
-    # https://kubernetes.io/docs/user-guide/persistent-volumes/#access-modes
-    # https://kubernetes.io/docs/resources-reference/v1.5/#gcepersistentdiskvolumesource-v1
-    pv = {
-      'kind'       => 'PersistentVolume',
-      'apiVersion' => 'v1',
-      'metadata'   => {
-        'name'        => 'eups-volume',
-        'labels'      => {
-          'name' => 'eups-volume',
-          'app'  => 'eups',
-        },
-        # this may not be working, at least under 1.4.8
-        'annotations' => {
-          'pv.beta.kubernetes.io/gid'=>'4242',
-        }
-      },
-      'spec'       => {
-        'capacity'          => {
-          'storage' => "#{gcloud_disk_size}Gi",
-        },
-        'accessModes'       => ['ReadWriteOnce'],
-        'gcePersistentDisk' => {
-          'pdName' => "#{env_prefix}-disk",
-          'fsType' => 'ext4',
-        }
-      }
-    }
-
-    doc = YAML.dump pv
-    puts doc
-    File.write('./kubernetes/eups-pv.yaml', doc)
-
-    pvc = {
-      'kind' => 'PersistentVolumeClaim',
-      'apiVersion' => 'v1',
-      'metadata' => {
-        'name' => 'eups-pvc',
-        'labels' => {
-          'name' => 'eups-pvc',
-          'app' => 'eups',
-        },
-      },
-      'spec' => {
-        'accessModes' => [ 'ReadWriteOnce' ],
-        'resources' => {
-          'requests' => {
-            'storage' => "#{gcloud_disk_size}Gi",
-          },
-        },
-      },
-    }
-
-    doc = YAML.dump pvc
-    puts doc
-    File.write('./kubernetes/eups-pvc.yaml', doc)
-
-  end
 end
 
 def tf_output(path)
