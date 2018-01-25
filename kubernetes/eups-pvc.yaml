@@ -1,0 +1,15 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: eups-pvc
+  labels:
+    name: eups-pvc
+    app: eups
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: pd-ssd
+  resources:
+    requests:
+      storage: 1024Gi

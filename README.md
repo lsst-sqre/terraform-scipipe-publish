@@ -9,8 +9,6 @@ tl;dr
     . creds.sh
     bundle exec rake eyaml:sqre
     bundle exec rake eyaml:decrypt
-    bundle exec rake kube:write-pv
-    bundle exec rake gcloud:disk
     bundle exec rake terraform:install
     # production only
     bundle exec rake terraform:remote
@@ -48,11 +46,6 @@ Note that `creds.sh` will need to be manually edited unless these env vars are p
 
     bundle exec rake eyaml:sqre
     bundle exec rake eyaml:decrypt
-
-### create gcloud persistent disk
-
-    bundle rake kube:write-pv
-    bundle exec rake gcloud:disk
 
 ### create s3 bucket
 

@@ -5,12 +5,7 @@ CLEAN.include(EYAML_FILES.ext('.yaml'))
 
 rule '.yaml' => '.eyaml' do |t|
   puts "#{t.name} #{t.source}"
-  sh "eyaml decrypt -f #{t.source} > #{t.name}"
-end
-
-def gcloud_disk_size
-  # in GiB
-  '512'
+  sh "bundle exec eyaml decrypt -f #{t.source} > #{t.name}"
 end
 
 def sh_quiet(script)
@@ -75,10 +70,15 @@ def tf_remote(deploy)
     end
 end
 
+def b64(text)
+  # Base64.encode64 will append unwanted newlines
+  Base64.encode64(text).strip!
+end
+
 namespace :eyaml do
   desc 'generate new eyaml keys'
   task :createkeys do |t|
-    sh_quiet "eyaml #{t}"
+    sh_quiet "bundle exec eyaml #{t}"
   end
 
   desc 'setup default sqre keyring'
@@ -101,7 +101,7 @@ namespace :eyaml do
 
   desc 'edit .eyaml file (requires keys)'
   task :edit, [:file] do |t, args|
-    sh "eyaml edit #{args[:file]}"
+    sh "bundle exec eyaml edit #{args[:file]}"
     Rake::Task['eyaml:decrypt'].invoke
   end
 end
@@ -164,11 +164,11 @@ namespace :terraform do
 
       secrets['data'] = {
         'AWS_ACCESS_KEY_ID' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']['value']),
+          b64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']['value']),
         'AWS_SECRET_ACCESS_KEY' =>
-          Base64.encode64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']['value']),
+          b64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']['value']),
         'S3_BUCKET' =>
-          Base64.encode64(outputs['EUPS_S3_BUCKET']['value']),
+          b64(outputs['EUPS_S3_BUCKET']['value']),
       }
 
       doc = YAML.dump secrets
@@ -198,15 +198,6 @@ namespace :terraform do
   end # :doxygen
 end
 
-namespace :gcloud do
-  desc 'create gce storage disk'
-  task :disk do
-    sh_quiet <<-EOS
-      gcloud compute disks create --type pd-ssd --size #{gcloud_disk_size}GB #{env_prefix}-disk
-    EOS
-  end
-end
-
 def khelper_cmd(arg)
   task arg.to_sym do
     sh_quiet <<-EOS
@@ -228,70 +219,6 @@ namespace :khelper do
 
   desc 'delete kubernetes resources'
   khelper_cmd 'delete'
-end
-
-namespace :kube do
-  desc 'write kubernetes PersistentVolume config'
-  task 'write-pv' do
-    require 'yaml'
-
-    # https://kubernetes.io/docs/user-guide/persistent-volumes/#access-modes
-    # https://kubernetes.io/docs/resources-reference/v1.5/#gcepersistentdiskvolumesource-v1
-    pv = {
-      'kind'       => 'PersistentVolume',
-      'apiVersion' => 'v1',
-      'metadata'   => {
-        'name'        => 'eups-volume',
-        'labels'      => {
-          'name' => 'eups-volume',
-          'app'  => 'eups',
-        },
-        # this may not be working, at least under 1.4.8
-        'annotations' => {
-          'pv.beta.kubernetes.io/gid'=>'4242',
-        }
-      },
-      'spec'       => {
-        'capacity'          => {
-          'storage' => "#{gcloud_disk_size}Gi",
-        },
-        'accessModes'       => ['ReadWriteOnce'],
-        'gcePersistentDisk' => {
-          'pdName' => "#{env_prefix}-disk",
-          'fsType' => 'ext4',
-        }
-      }
-    }
-
-    doc = YAML.dump pv
-    puts doc
-    File.write('./kubernetes/eups-pv.yaml', doc)
-
-    pvc = {
-      'kind' => 'PersistentVolumeClaim',
-      'apiVersion' => 'v1',
-      'metadata' => {
-        'name' => 'eups-pvc',
-        'labels' => {
-          'name' => 'eups-pvc',
-          'app' => 'eups',
-        },
-      },
-      'spec' => {
-        'accessModes' => [ 'ReadWriteOnce' ],
-        'resources' => {
-          'requests' => {
-            'storage' => "#{gcloud_disk_size}Gi",
-          },
-        },
-      },
-    }
-
-    doc = YAML.dump pvc
-    puts doc
-    File.write('./kubernetes/eups-pvc.yaml', doc)
-
-  end
 end
 
 def tf_output(path)

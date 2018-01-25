@@ -84,7 +84,7 @@ kube_resources() {
     ssl-proxy-secrets.yaml
     ssl-proxy-service.yaml
     ssl-proxy-rc.yaml
-    eups-pv.yaml
+    pd-ssd-storageclass.yaml
     eups-pvc.yaml
     eups-service.yaml
     eups-deployment.yaml
