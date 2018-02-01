@@ -31,7 +31,7 @@ output "EUPS_PULL_AWS_SECRET_ACCESS_KEY" {
 }
 
 output "EUPS_BACKUP_S3_BUCKET" {
-  value = "${aws_s3_bucket.eups-backup.id}"
+  value = "${aws_s3_bucket.eups-backups.id}"
 }
 
 output "EUPS_BACKUP_USER" {

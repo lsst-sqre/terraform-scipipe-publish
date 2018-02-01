@@ -100,7 +100,7 @@ module "backup-user" {
         "s3:GetObject",
         "s3:PutObject"
       ],
-      "Resource": "${aws_s3_bucket.eups-backup.arn}/*"
+      "Resource": "${aws_s3_bucket.eups-backups.arn}/*"
     },
     {
       "Sid": "4",
@@ -109,7 +109,7 @@ module "backup-user" {
         "s3:ListObjects",
         "s3:ListBucket"
       ],
-      "Resource": "${aws_s3_bucket.eups-backup.arn}"
+      "Resource": "${aws_s3_bucket.eups-backups.arn}"
     }
   ]
 }
@@ -125,9 +125,9 @@ resource "aws_s3_bucket" "eups" {
 
 # the bucket postfix is "-backups" (note the plural) to be consistent with what
 # other sqre devs have done while the non-plural is used in tf resource names.
-resource "aws_s3_bucket" "eups-backup" {
+resource "aws_s3_bucket" "eups-backups" {
   region = "${var.aws_default_region}"
-  bucket = "${replace("${var.env_name}-eups.${var.domain_name}-backups", "prod-", "")}"
+  bucket = "${aws_s3_bucket.eups.id}-backups",
 
   force_destroy = false
 }
