@@ -75,6 +75,35 @@ def b64(text)
   Base64.encode64(text).strip!
 end
 
+class TFOutput
+  class << self
+    def eyaml_block(text)
+      "DEC::PKCS7[#{text}]!"
+    end
+  end
+
+  def initialize(path:, eyamlize: false, base64: false)
+    Dir.chdir(path) do
+      @output = JSON.parse(`../bin/terraform output -json`)
+    end
+    @base64   = base64
+    @eyamlize = eyamlize
+  end
+
+  def [](k)
+    v = @output[k] ? @output[k]['value'] : nil
+    return if v.nil?
+    if @base64
+      v = b64(v)
+    end
+    # only add eyaml block armor to variables tf has indicated are 'sensitive'
+    if @eyamlize and @output[k]['sensitive']
+      v = self.class.eyaml_block(v)
+    end
+    v
+  end
+end
+
 namespace :eyaml do
   desc 'generate new eyaml keys'
   task :createkeys do |t|
@@ -145,10 +174,7 @@ namespace :terraform do
       require 'yaml'
       require 'base64'
 
-      outputs = nil
-      Dir.chdir('terraform/s3') do
-        outputs = JSON.parse(`../bin/terraform output -json`)
-      end
+      out = TFOutput.new(path: 'terraform/s3', base64: true)
 
       secrets = {
         'apiVersion' => 'v1',
@@ -163,12 +189,9 @@ namespace :terraform do
       }
 
       secrets['data'] = {
-        'AWS_ACCESS_KEY_ID' =>
-          b64(outputs['EUPS_PULL_AWS_ACCESS_KEY_ID']['value']),
-        'AWS_SECRET_ACCESS_KEY' =>
-          b64(outputs['EUPS_PULL_AWS_SECRET_ACCESS_KEY']['value']),
-        'S3_BUCKET' =>
-          b64(outputs['EUPS_S3_BUCKET']['value']),
+        'AWS_ACCESS_KEY_ID'     => out['EUPS_PULL_AWS_ACCESS_KEY_ID'],
+        'AWS_SECRET_ACCESS_KEY' => out['EUPS_PULL_AWS_SECRET_ACCESS_KEY'],
+        'S3_BUCKET'             => out['EUPS_S3_BUCKET'],
       }
 
       doc = YAML.dump secrets
@@ -221,22 +244,14 @@ namespace :khelper do
   khelper_cmd 'delete'
 end
 
-def tf_output(path)
-  output = nil
-  Dir.chdir(path) do
-    output = JSON.parse(`../bin/terraform output -json`)
-  end
-  output
-end
-
 namespace :jenkins do
   desc 'print jenkins hiera yaml'
   task 'creds' do
     require 'yaml'
     require 'json'
 
-    s3_output  = tf_output('terraform/s3')
-    dox_output = tf_output('terraform/doxygen')
+    s3_out  = TFOutput.new(path: 'terraform/s3', eyamlize: true)
+    dox_out = TFOutput.new(path: 'terraform/doxygen', eyamlize: true)
 
     creds = {
       'aws-eups-push' => {
@@ -244,45 +259,45 @@ namespace :jenkins do
         'scope'       => 'GLOBAL',
         'impl'        => 'UsernamePasswordCredentialsImpl',
         'description' => 'push EUPS packages -> s3',
-        'username'    => s3_output['EUPS_PUSH_AWS_ACCESS_KEY_ID']['value'],
-        'password'    => s3_output['EUPS_PUSH_AWS_SECRET_ACCESS_KEY']['value'],
+        'username'    => s3_out['EUPS_PUSH_AWS_ACCESS_KEY_ID'],
+        'password'    => s3_out['EUPS_PUSH_AWS_SECRET_ACCESS_KEY'],
       },
       'eups-push-bucket' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',
         'impl'        => 'StringCredentialsImpl',
         'description' => 'name of EUPS s3 bucket',
-        'secret'      => s3_output['EUPS_S3_BUCKET']['value'],
+        'secret'      => s3_out['EUPS_S3_BUCKET'],
       },
       'aws-eups-backup' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',
         'impl'        => 'UsernamePasswordCredentialsImpl',
         'description' => 'backup EUPS s3 bucket -> s3 bucket',
-        'username'    => s3_output['EUPS_BACKUP_AWS_ACCESS_KEY_ID']['value'],
-        'password'    => s3_output['EUPS_BACKUP_AWS_SECRET_ACCESS_KEY']['value'],
+        'username'    => s3_out['EUPS_BACKUP_AWS_ACCESS_KEY_ID'],
+        'password'    => s3_out['EUPS_BACKUP_AWS_SECRET_ACCESS_KEY'],
       },
       'eups-backup-bucket' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',
         'impl'        => 'StringCredentialsImpl',
         'description' => 'name of EUPS backup s3 bucket',
-        'secret'      => s3_output['EUPS_BACKUP_S3_BUCKET']['value'],
+        'secret'      => s3_out['EUPS_BACKUP_S3_BUCKET'],
       },
       'aws-doxygen-push' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',
         'impl'        => 'UsernamePasswordCredentialsImpl',
         'description' => 'push doxygen builds -> s3',
-        'username'    => dox_output['DOXYGEN_PUSH_AWS_ACCESS_KEY_ID']['value'],
-        'password'    => dox_output['DOXYGEN_PUSH_AWS_SECRET_ACCESS_KEY']['value'],
+        'username'    => dox_out['DOXYGEN_PUSH_AWS_ACCESS_KEY_ID'],
+        'password'    => dox_out['DOXYGEN_PUSH_AWS_SECRET_ACCESS_KEY'],
       },
       'doxygen-push-bucket' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',
         'impl'        => 'StringCredentialsImpl',
         'description' => 'name of doxygen s3 bucket',
-        'secret'      => dox_output['DOXYGEN_S3_BUCKET']['value'],
+        'secret'      => dox_out['DOXYGEN_S3_BUCKET'],
       },
     }
     puts YAML.dump(creds)
