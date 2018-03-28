@@ -161,7 +161,7 @@ resource "aws_s3_bucket" "eups-backups" {
   lifecycle_rule {
     id      = "monthly"
     enabled = true
-    prefix  = "montly/"
+    prefix  = "monthly/"
 
     expiration {
       days = 217
