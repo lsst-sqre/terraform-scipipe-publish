@@ -284,6 +284,14 @@ namespace :jenkins do
         'description' => 'name of EUPS backup s3 bucket',
         'secret'      => s3_out['EUPS_BACKUP_S3_BUCKET'],
       },
+      'aws-eups-tag-admin' => {
+        'domain'      => nil,
+        'scope'       => 'GLOBAL',
+        'impl'        => 'UsernamePasswordCredentialsImpl',
+        'description' => 'manage eups distrib tags in s3 bucket',
+        'username'    => s3_out['EUPS_TAG_ADMIN_AWS_ACCESS_KEY_ID'],
+        'password'    => s3_out['EUPS_TAG_ADMIN_AWS_SECRET_ACCESS_KEY'],
+      },
       'aws-doxygen-push' => {
         'domain'      => nil,
         'scope'       => 'GLOBAL',
