@@ -47,3 +47,17 @@ output "EUPS_BACKUP_AWS_SECRET_ACCESS_KEY" {
   sensitive = true
   value     = "${module.backup-user.secret}"
 }
+
+output "EUPS_TAG_ADMIN_USER" {
+  value = "${module.tag-admin-user.name}"
+}
+
+output "EUPS_TAG_ADMIN_AWS_ACCESS_KEY_ID" {
+  sensitive = true
+  value     = "${module.tag-admin-user.id}"
+}
+
+output "EUPS_TAG_ADMIN_AWS_SECRET_ACCESS_KEY" {
+  sensitive = true
+  value     = "${module.tag-admin-user.secret}"
+}
