@@ -185,6 +185,10 @@ resource "aws_s3_bucket" "eups" {
   bucket = "${replace("${var.env_name}-eups.${var.domain_name}", "prod-", "")}"
   acl    = "private"
 
+  versioning {
+    enabled = false
+  }
+
   force_destroy = false
 }
 
@@ -194,6 +198,12 @@ resource "aws_s3_bucket" "eups-backups" {
   region = "${var.aws_default_region}"
   bucket = "${aws_s3_bucket.eups.id}-backups",
   acl    = "private"
+
+  # lifecycle rules still need to handle versioned object to work with buckets
+  # on which versioning has been disabled (suspended)
+  versioning {
+    enabled = false
+  }
 
   force_destroy = false
 
