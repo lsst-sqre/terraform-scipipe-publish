@@ -205,6 +205,9 @@ resource "aws_s3_bucket" "eups-backups" {
     expiration {
       days = 8
     }
+    noncurrent_version_expiration {
+      days = 8
+    }
   }
 
   lifecycle_rule {
@@ -213,6 +216,9 @@ resource "aws_s3_bucket" "eups-backups" {
     prefix  = "weekly/"
 
     expiration {
+      days = 35
+    }
+    noncurrent_version_expiration {
       days = 35
     }
   }
@@ -228,6 +234,9 @@ resource "aws_s3_bucket" "eups-backups" {
     prefix  = "monthly/"
 
     expiration {
+      days = 217
+    }
+    noncurrent_version_expiration {
       days = 217
     }
 
