@@ -315,6 +315,7 @@ end
 desc 'write creds.sh'
 task :creds do
   File.write('creds.sh', <<-EOS.gsub(/^\s+/, '')
+    # shellcheck shell=bash
     export AWS_ACCESS_KEY_ID=#{ENV['AWS_ACCESS_KEY_ID']}
     export AWS_SECRET_ACCESS_KEY=#{ENV['AWS_SECRET_ACCESS_KEY']}
     export AWS_DEFAULT_REGION=us-east-1
