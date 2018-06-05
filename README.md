@@ -1,6 +1,8 @@
 terraform / kubernetes / s3 deployment of HTTPS publishing for EUPS_PKGROOT(s)
 ===
 
+[![Build Status](https://travis-ci.org/lsst-sqre/deploy-eups-pkgroot.png)](https://travis-ci.org/lsst-sqre/deploy-eups-pkgroot)
+
 tl;dr
 ---
 
