@@ -1,0 +1,27 @@
+sudo: false
+language: c
+matrix:
+  include:
+    - env: TEST=markdownlint
+      language: c
+      services:
+        - docker
+      script: ./tests/mdl.sh
+
+    - env: TEST=make
+      language: c
+      script: ./tests/make.sh
+
+    - env: TEST=terraform
+      language: c
+      script: |
+       set -e
+       cd tf
+       make test
+branches:
+  only:
+  - master
+# also matched against tag pushes
+  - /^\d+\.\d+\.\d+$/
+notifications:
+  email: false

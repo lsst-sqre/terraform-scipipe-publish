@@ -1,6 +1,8 @@
 terraform / kubernetes / s3 deployment of HTTPS publishing for EUPS_PKGROOT(s)
 ===
 
+[![Build Status](https://travis-ci.org/lsst-sqre/deploy-eups-pkgroot.png)](https://travis-ci.org/lsst-sqre/deploy-eups-pkgroot)
+
 tl;dr
 ---
 
@@ -37,7 +39,8 @@ Deployment
     bundle exec rake creds
     . creds.sh
 
-Note that `creds.sh` will need to be manually edited unless these env vars are present when the rake task is run:
+Note that `creds.sh` will need to be manually edited unless these env vars are
+present when the rake task is run:
 
 * `AWS_ACCESS_KEY_ID`
 * `AWS_SECRET_ACCESS_KEY`
@@ -69,7 +72,8 @@ __Note that this is only nessicary for a production deployment.__
 
     bundle exec rake khelper:create
 
-Note that this may take significant time to converge.  The next step may not be executed until
+Note that this may take significant time to converge.  The next step may not be
+executed until
 
     kubectl get services nginx-ssl-proxy
 
