@@ -1,7 +1,7 @@
-terraform / kubernetes / s3 deployment of HTTPS publishing for EUPS_PKGROOT(s)
+deployment for EUPS_PKGROOT + doxygen html
 ===
 
-[![Build Status](https://travis-ci.org/lsst-sqre/deploy-eups-pkgroot.png)](https://travis-ci.org/lsst-sqre/deploy-eups-pkgroot)
+[![Build Status](https://travis-ci.org/lsst-sqre/deploy-publish-release.png)](https://travis-ci.org/lsst-sqre/deploy-publish-release)
 
 tl;dr
 ---
