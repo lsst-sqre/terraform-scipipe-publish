@@ -1,13 +1,5 @@
 require 'rake/clean'
 
-EYAML_FILES = FileList['kubernetes/**/*.eyaml']
-CLEAN.include(EYAML_FILES.ext('.yaml'))
-
-rule '.yaml' => '.eyaml' do |t|
-  puts "#{t.name} #{t.source}"
-  sh "bundle exec eyaml decrypt -f #{t.source} > #{t.name}"
-end
-
 def sh_quiet(script)
   sh script do |ok, res|
     unless ok
@@ -101,37 +93,6 @@ class TFOutput
       v = self.class.eyaml_block(v)
     end
     v
-  end
-end
-
-namespace :eyaml do
-  desc 'generate new eyaml keys'
-  task :createkeys do |t|
-    sh_quiet "bundle exec eyaml #{t}"
-  end
-
-  desc 'setup default sqre keyring'
-  task :sqre do |t|
-    sh_quiet <<-EOS
-      mkdir -p .lsst-certs
-      cd .lsst-certs
-      git init
-      git remote add origin ~/Dropbox/lsst-sqre/git/lsst-certs.git
-      git config core.sparseCheckout true
-      echo "eyaml-keys/" >> .git/info/sparse-checkout
-      git pull --depth=1 origin master
-      cd ..
-      ln -sf .lsst-certs/eyaml-keys keys
-    EOS
-  end
-
-  desc 'decrypt all eyaml files (*.eyaml -> *.yaml'
-  task :decrypt => EYAML_FILES.ext('.yaml')
-
-  desc 'edit .eyaml file (requires keys)'
-  task :edit, [:file] do |t, args|
-    sh "bundle exec eyaml edit #{args[:file]}"
-    Rake::Task['eyaml:decrypt'].invoke
   end
 end
 
@@ -329,7 +290,6 @@ end
 
 task :default => [
   'terraform:install',
-  'eyaml:decrypt',
 ]
 
 desc 'destroy all tf/kube resources'

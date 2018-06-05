@@ -9,8 +9,6 @@ tl;dr
     bundle install
     bundle exec rake creds
     . creds.sh
-    bundle exec rake eyaml:sqre
-    bundle exec rake eyaml:decrypt
     bundle exec rake terraform:install
     # production only
     bundle exec rake terraform:remote
@@ -44,11 +42,6 @@ present when the rake task is run:
 
 * `AWS_ACCESS_KEY_ID`
 * `AWS_SECRET_ACCESS_KEY`
-
-### Setup SQRE eyaml key-ring
-
-    bundle exec rake eyaml:sqre
-    bundle exec rake eyaml:decrypt
 
 ### create s3 bucket
 
