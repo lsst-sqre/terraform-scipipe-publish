@@ -9,11 +9,10 @@ TF_ZIP_FILE := terraform_$(TF_VER)_$(UNAME)_$(ARCH).zip
 TF_ZIP_DL := $(DL_DIR)/$(TF_ZIP_FILE)
 TF_BIN := $(BIN_DIR)/terraform
 
-# these default values must be in sync with the definitions variables.tf
-TF_VAR_service_name ?= eups
-TF_VAR_domain_name ?= lsst.codes
+TF_VAR_env_name ?= demo
+TF_VAR_deploy_name ?= publish-release
 AWS_DEFAULT_REGION ?= us-east-1
-FQDN := $(subst prod-,,$(TF_VAR_env_name)-$(TF_VAR_service_name).$(TF_VAR_domain_name))
+FQDN := $(subst prod-,,$(TF_VAR_env_name)-$(TF_VAR_deploy_name))
 TF_S3_BCKT := $(FQDN)-tf
 
 .PHONY: all test

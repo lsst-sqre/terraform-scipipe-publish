@@ -23,7 +23,7 @@ variable "env_name" {
 
 variable "deploy_name" {
   description = "Name of deployment."
-  default     = "publish"
+  default     = "publish-release"
 }
 
 variable "domain_name" {

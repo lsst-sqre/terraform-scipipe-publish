@@ -6,7 +6,7 @@ provider "template" {
   version = "~> 1.0"
 }
 
-module "gke_publish" {
+module "gke" {
   source             = "github.com/lsst-sqre/terraform-gke-std"
   name               = "${data.template_file.gke_cluster_name.rendered}"
   google_project     = "${var.google_project}"
@@ -19,10 +19,10 @@ module "pkgroot" {
   env_name                   = "${var.env_name}"
   service_name               = "eups"
   domain_name                = "${var.domain_name}"
-  k8s_host                   = "${module.gke_publish.host}"
-  k8s_client_certificate     = "${module.gke_publish.client_certificate}"
-  k8s_client_key             = "${module.gke_publish.client_key}"
-  k8s_cluster_ca_certificate = "${module.gke_publish.cluster_ca_certificate}"
+  k8s_host                   = "${module.gke.host}"
+  k8s_client_certificate     = "${module.gke.client_certificate}"
+  k8s_client_key             = "${module.gke.client_key}"
+  k8s_cluster_ca_certificate = "${module.gke.cluster_ca_certificate}"
 }
 
 module "doxygen" {

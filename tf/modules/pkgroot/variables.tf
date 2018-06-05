@@ -32,3 +32,14 @@ variable "k8s_host" {}
 variable "k8s_client_certificate" {}
 variable "k8s_client_key" {}
 variable "k8s_cluster_ca_certificate" {}
+
+variable "k8s_namespace" {
+  description = "DNS domain name to use when creating route53 records."
+  default     = "pkgroot"
+}
+
+variable "pkgroot_storage_size" {
+  # E.g.: "200Gi" "1Ti"
+  description = "Size of gcloud persistent volume claim"
+  default     = "1Ti"
+}

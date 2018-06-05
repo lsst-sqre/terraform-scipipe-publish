@@ -1,3 +1,7 @@
+output "DOXYGEN_FQDN" {
+  value = "${module.doxygen.fqdn}"
+}
+
 output "DOXYGEN_S3_BUCKET" {
   value = "${module.doxygen.DOXYGEN_S3_BUCKET}"
 }
@@ -14,6 +18,10 @@ output "DOXYGEN_PUSH_AWS_ACCESS_KEY_ID" {
 output "DOXYGEN_PUSH_AWS_SECRET_ACCESS_KEY" {
   sensitive = true
   value     = "${module.doxygen.DOXYGEN_PUSH_AWS_SECRET_ACCESS_KEY}"
+}
+
+output "EUPS_FQDN" {
+  value = "${module.pkgroot.fqdn}"
 }
 
 output "EUPS_S3_BUCKET" {
