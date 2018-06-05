@@ -1,9 +1,5 @@
-terraform {
-  backend "s3" {}
-}
-
-module "push-user" {
-  source = "../modules/iam_user"
+module "push_user" {
+  source = "github.com/lsst-sqre/tf_aws_iam_user"
 
   name = "${var.env_name}-eups-push"
 
@@ -34,8 +30,8 @@ module "push-user" {
 EOF
 }
 
-module "pull-user" {
-  source = "../modules/iam_user"
+module "pull_user" {
+  source = "github.com/lsst-sqre/tf_aws_iam_user"
 
   name = "${var.env_name}-eups-pull"
 
@@ -65,8 +61,8 @@ module "pull-user" {
 EOF
 }
 
-module "backup-user" {
-  source = "../modules/iam_user"
+module "backup_user" {
+  source = "github.com/lsst-sqre/tf_aws_iam_user"
 
   name = "${var.env_name}-eups-backup"
 
@@ -100,7 +96,7 @@ module "backup-user" {
         "s3:GetObject",
         "s3:PutObject"
       ],
-      "Resource": "${aws_s3_bucket.eups-backups.arn}/*"
+      "Resource": "${aws_s3_bucket.eups_backups.arn}/*"
     },
     {
       "Sid": "4",
@@ -109,15 +105,15 @@ module "backup-user" {
         "s3:ListObjects",
         "s3:ListBucket"
       ],
-      "Resource": "${aws_s3_bucket.eups-backups.arn}"
+      "Resource": "${aws_s3_bucket.eups_backups.arn}"
     }
   ]
 }
 EOF
 }
 
-module "tag-admin-user" {
-  source = "../modules/iam_user"
+module "tag_admin_user" {
+  source = "github.com/lsst-sqre/tf_aws_iam_user"
 
   name = "${var.env_name}-eups-tag-admin"
 
@@ -194,9 +190,9 @@ resource "aws_s3_bucket" "eups" {
 
 # the bucket postfix is "-backups" (note the plural) to be consistent with what
 # other sqre devs have done while the non-plural is used in tf resource names.
-resource "aws_s3_bucket" "eups-backups" {
+resource "aws_s3_bucket" "eups_backups" {
   region = "${var.aws_default_region}"
-  bucket = "${aws_s3_bucket.eups.id}-backups",
+  bucket = "${aws_s3_bucket.eups.id}-backups"
   acl    = "private"
 
   # lifecycle rules still need to handle versioned object to work with buckets
@@ -215,6 +211,7 @@ resource "aws_s3_bucket" "eups-backups" {
     expiration {
       days = 8
     }
+
     noncurrent_version_expiration {
       days = 8
     }
@@ -228,6 +225,7 @@ resource "aws_s3_bucket" "eups-backups" {
     expiration {
       days = 35
     }
+
     noncurrent_version_expiration {
       days = 35
     }
@@ -246,6 +244,7 @@ resource "aws_s3_bucket" "eups-backups" {
     expiration {
       days = 217
     }
+
     noncurrent_version_expiration {
       days = 217
     }

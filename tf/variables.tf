@@ -18,12 +18,12 @@ variable "aws_zone_id" {
 
 variable "env_name" {
   description = "Name of deployment environment."
-  default     = "prod"
+  default     = "demo"
 }
 
 variable "deploy_name" {
   description = "Name of deployment."
-  default     = "publish"
+  default     = "publish-release"
 }
 
 variable "domain_name" {

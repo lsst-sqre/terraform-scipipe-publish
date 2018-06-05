@@ -1,11 +1,12 @@
 FROM centos:7
-MAINTAINER sqre-admin
+
+ARG AWSCLI_VER=1.14.61
 
 USER root
 RUN yum update -y
 RUN yum install -y epel-release
 RUN yum install -y python-pip
-RUN pip install awscli
+RUN pip install awscli=="${AWSCLI_VER}" --upgrade --no-cache-dir
 
 RUN yum -y swap -- remove fakesystemd -- install systemd systemd-libs
 # XXX masking these units seems to no longer be necessary?

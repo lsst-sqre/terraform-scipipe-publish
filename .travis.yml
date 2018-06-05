@@ -18,6 +18,12 @@ matrix:
        set -e
        cd tf
        make test
+
+    - env: TEST=hadolint
+      language: c
+      services:
+        - docker
+      script: ./tests/hadolint.sh
 branches:
   only:
   - master

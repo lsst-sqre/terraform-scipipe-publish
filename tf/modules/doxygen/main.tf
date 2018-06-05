@@ -1,9 +1,5 @@
-terraform {
-  backend "s3" {}
-}
-
-module "push-user" {
-  source = "../modules/iam_user"
+module "push_user" {
+  source = "github.com/lsst-sqre/tf_aws_iam_user"
 
   name = "${var.env_name}-doxygen-push"
 
@@ -36,7 +32,7 @@ EOF
 
 resource "aws_s3_bucket" "doxygen" {
   region        = "${var.aws_default_region}"
-  bucket        = "${replace("${var.env_name}-doxygen.${var.domain_name}", "prod-", "")}"
+  bucket        = "${data.template_file.fqdn.rendered}"
   acl           = "public-read"
   force_destroy = false
 
@@ -80,7 +76,7 @@ EOF
 # Per the README, this file under the MIT license
 #
 # note that the non-website s3 url must be used
-resource "aws_s3_bucket_object" "doxygen-index" {
+resource "aws_s3_bucket_object" "doxygen_index" {
   bucket       = "${aws_s3_bucket.doxygen.id}"
   key          = "index.html"
   content_type = "text/html"
@@ -111,11 +107,11 @@ resource "aws_s3_bucket_object" "doxygen-index" {
 EOF
 }
 
-resource "aws_route53_record" "doxygen-www" {
+resource "aws_route53_record" "doxygen_www" {
   zone_id = "${var.aws_zone_id}"
 
   # remove "<env>-" prefix for production
-  name    = "${replace("${var.env_name}-doxygen.${var.domain_name}", "prod-", "")}"
+  name    = "${data.template_file.fqdn.rendered}"
   type    = "CNAME"
   ttl     = "300"
   records = ["${aws_s3_bucket.doxygen.website_endpoint}"]
