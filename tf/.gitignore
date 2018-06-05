@@ -1,5 +1,7 @@
 bin
-*tfstate*
+dhparam.pem
+downloads/
+lsst-certs/
 override.tf
 .terraform
-downloads/
+*tfstate*

@@ -31,7 +31,7 @@ $(BIN_DIR) $(DL_DIR) $(TF_PLUG_DIR):
 	mkdir -p $@
 
 .PHONY: tf-install
-tf-install: $(TF_BIN)
+tf-install: $(TF_BIN) tls
 
 .PHONY: tf-s3-mb
 tf-s3-mb:
@@ -68,6 +68,19 @@ tf-fmt:
 tf-validate:
 	$(TF_BIN) validate --check-variables=false
 
+.PHONY: tls
+tls: dhparam.pem lsst-certs
+
+tls-clean:
+	-rm -rf lsst-certs
+
+lsst-certs:
+	git clone ~/Dropbox/lsst-sqre/git/lsst-certs.git/ lsst-certs
+
+# do not clean up by default
+dhparam.pem:
+	openssl dhparam -out $@ 2048
+
 .PHONY: clean
-clean:
+clean: tls-clean
 	-rm -rf $(BIN_DIR)
