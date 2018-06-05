@@ -30,7 +30,7 @@ $(BIN_DIR) $(DL_DIR) $(TF_PLUG_DIR):
 	mkdir -p $@
 
 .PHONY: tf-install
-tf-install: $(TF_BIN) tls
+tf-install: $(TF_BIN)
 
 .PHONY: tf-s3-mb
 tf-s3-mb:
