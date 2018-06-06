@@ -25,6 +25,12 @@ matrix:
       services:
         - docker
       script: ./tests/hadolint.sh
+
+    - env: TEST=yamllint
+      language: c
+      services:
+        - docker
+      script: ./tests/yamllint.sh
 branches:
   only:
     - master
