@@ -23,6 +23,9 @@ module "pkgroot" {
   k8s_client_certificate     = "${module.gke.client_certificate}"
   k8s_client_key             = "${module.gke.client_key}"
   k8s_cluster_ca_certificate = "${module.gke.cluster_ca_certificate}"
+
+  # prod s3 bucket is > 1TiB
+  pkgroot_storage_size = "2Ti"
 }
 
 module "doxygen" {
