@@ -10,7 +10,6 @@ variable "aws_zone_id" {
 
 variable "env_name" {
   description = "Name of deployment environment."
-  default     = "demo"
 }
 
 variable "service_name" {
@@ -34,7 +33,7 @@ variable "k8s_client_key" {}
 variable "k8s_cluster_ca_certificate" {}
 
 variable "k8s_namespace" {
-  description = "DNS domain name to use when creating route53 records."
+  description = "k8s namespace to manage resources within."
   default     = "pkgroot"
 }
 
