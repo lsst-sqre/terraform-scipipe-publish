@@ -10,7 +10,6 @@ variable "aws_zone_id" {
 
 variable "env_name" {
   description = "Name of deployment environment."
-  default     = "demo"
 }
 
 variable "service_name" {

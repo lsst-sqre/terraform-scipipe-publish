@@ -10,7 +10,6 @@ variable "aws_zone_id" {
 
 variable "env_name" {
   description = "AWS tag name to use on resources."
-  default     = "demo"
 }
 
 variable "service_name" {
