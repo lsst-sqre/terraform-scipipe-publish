@@ -14,11 +14,12 @@ module "gke" {
 }
 
 module "pkgroot" {
-  source                     = "modules/pkgroot"
-  aws_zone_id                = "${var.aws_zone_id}"
-  env_name                   = "${var.env_name}"
-  service_name               = "eups"
-  domain_name                = "${var.domain_name}"
+  source       = "modules/pkgroot"
+  aws_zone_id  = "${var.aws_zone_id}"
+  env_name     = "${var.env_name}"
+  service_name = "eups"
+  domain_name  = "${var.domain_name}"
+
   k8s_namespace              = "pkgroot"
   k8s_host                   = "${module.gke.host}"
   k8s_client_certificate     = "${module.gke.client_certificate}"
