@@ -16,6 +16,11 @@ resource "aws_s3_bucket" "doxygen" {
   }
 }
 
+resource "aws_s3_bucket_metric" "doxygen" {
+  bucket = "${aws_s3_bucket.doxygen.id}"
+  name   = "EntireBucket"
+}
+
 # the policy can not be inlined in the bucket resource as it is not allowed to
 # self reference
 resource "aws_s3_bucket_policy" "doxygen" {
