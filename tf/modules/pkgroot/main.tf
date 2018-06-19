@@ -1,3 +1,7 @@
+provider "aws" {
+  version = "~> 1.21"
+}
+
 provider "kubernetes" {
   version = "~> 1.1"
 
