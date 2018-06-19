@@ -7,11 +7,23 @@ resource "aws_s3_bucket" "eups" {
   versioning {
     enabled = false
   }
+
+  logging {
+    target_bucket = "${aws_s3_bucket.pkgroot_logs.id}"
+    target_prefix = "log/"
+  }
 }
 
 resource "aws_s3_bucket_metric" "pkgroot" {
   bucket = "${aws_s3_bucket.eups.bucket}"
   name   = "EntireBucket"
+}
+
+resource "aws_s3_bucket" "pkgroot_logs" {
+  region        = "${var.aws_default_region}"
+  bucket        = "${data.template_file.fqdn.rendered}-logs"
+  acl           = "log-delivery-write"
+  force_destroy = false
 }
 
 # the bucket postfix is "-backups" (note the plural) to be consistent with what
@@ -28,6 +40,10 @@ resource "aws_s3_bucket" "eups_backups" {
     enabled = false
   }
 
+  logging {
+    target_bucket = "${aws_s3_bucket.pkgroot_backups_logs.id}"
+    target_prefix = "log/"
+  }
 
   lifecycle_rule {
     id      = "daily"
@@ -85,4 +101,11 @@ resource "aws_s3_bucket" "eups_backups" {
 resource "aws_s3_bucket_metric" "pkgroot_backups" {
   bucket = "${aws_s3_bucket.eups_backups.bucket}"
   name   = "EntireBucket"
+}
+
+resource "aws_s3_bucket" "pkgroot_backups_logs" {
+  region        = "${var.aws_default_region}"
+  bucket        = "${data.template_file.fqdn.rendered}-backups-logs"
+  acl           = "log-delivery-write"
+  force_destroy = false
 }
