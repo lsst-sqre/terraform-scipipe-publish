@@ -14,11 +14,23 @@ resource "aws_s3_bucket" "doxygen" {
     allowed_methods = ["GET"]
     allowed_origins = ["*"]
   }
+
+  logging {
+    target_bucket = "${aws_s3_bucket.doxygen_logs.id}"
+    target_prefix = "log/"
+  }
 }
 
 resource "aws_s3_bucket_metric" "doxygen" {
   bucket = "${aws_s3_bucket.doxygen.id}"
   name   = "EntireBucket"
+}
+
+resource "aws_s3_bucket" "doxygen_logs" {
+  region        = "${var.aws_default_region}"
+  bucket        = "${data.template_file.fqdn.rendered}-logs"
+  acl           = "log-delivery-write"
+  force_destroy = false
 }
 
 # the policy can not be inlined in the bucket resource as it is not allowed to
