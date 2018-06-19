@@ -1,21 +1,21 @@
 resource "aws_s3_bucket" "eups" {
-  region = "${var.aws_default_region}"
-  bucket = "${replace("${var.env_name}-eups.${var.domain_name}", "prod-", "")}"
-  acl    = "private"
+  region        = "${var.aws_default_region}"
+  bucket        = "${data.template_file.fqdn.rendered}"
+  acl           = "private"
+  force_destroy = false
 
   versioning {
     enabled = false
   }
-
-  force_destroy = false
 }
 
 # the bucket postfix is "-backups" (note the plural) to be consistent with what
 # other sqre devs have done while the non-plural is used in tf resource names.
 resource "aws_s3_bucket" "eups_backups" {
-  region = "${var.aws_default_region}"
-  bucket = "${aws_s3_bucket.eups.id}-backups"
-  acl    = "private"
+  region        = "${var.aws_default_region}"
+  bucket        = "${aws_s3_bucket.eups.id}-backups"
+  acl           = "private"
+  force_destroy = false
 
   # lifecycle rules still need to handle versioned object to work with buckets
   # on which versioning has been disabled (suspended)
@@ -23,7 +23,6 @@ resource "aws_s3_bucket" "eups_backups" {
     enabled = false
   }
 
-  force_destroy = false
 
   lifecycle_rule {
     id      = "daily"
