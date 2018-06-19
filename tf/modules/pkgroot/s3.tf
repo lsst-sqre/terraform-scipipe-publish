@@ -9,6 +9,11 @@ resource "aws_s3_bucket" "eups" {
   }
 }
 
+resource "aws_s3_bucket_metric" "pkgroot" {
+  bucket = "${aws_s3_bucket.eups.bucket}"
+  name   = "EntireBucket"
+}
+
 # the bucket postfix is "-backups" (note the plural) to be consistent with what
 # other sqre devs have done while the non-plural is used in tf resource names.
 resource "aws_s3_bucket" "eups_backups" {
@@ -75,4 +80,9 @@ resource "aws_s3_bucket" "eups_backups" {
       storage_class = "GLACIER"
     }
   }
+}
+
+resource "aws_s3_bucket_metric" "pkgroot_backups" {
+  bucket = "${aws_s3_bucket.eups_backups.bucket}"
+  name   = "EntireBucket"
 }
