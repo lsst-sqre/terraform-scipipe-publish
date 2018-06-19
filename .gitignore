@@ -1,4 +1,3 @@
 .bundle/
 creds.sh
-keys
-.lsst-certs/
+*.swp
