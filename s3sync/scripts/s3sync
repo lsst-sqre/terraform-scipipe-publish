@@ -31,5 +31,7 @@ get_secret S3_BUCKET
 
 WWW_ROOT='/var/www/html'
 
-aws s3 sync --delete "s3://${S3_BUCKET}" "$WWW_ROOT"
+# compare both size and timestamp; this is needed to detect s3 objects which
+# have been replaced with a new version that has the same size.
+aws s3 sync --exact-timestamps --delete "s3://${S3_BUCKET}" "$WWW_ROOT"
 find "$WWW_ROOT" -depth -type d -empty -delete
