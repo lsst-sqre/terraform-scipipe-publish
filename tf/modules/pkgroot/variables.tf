@@ -42,3 +42,7 @@ variable "pkgroot_storage_size" {
   description = "Size of gcloud persistent volume claim"
   default     = "1Ti"
 }
+
+variable "proxycert" {}
+variable "proxykey" {}
+variable "dhparam" {}

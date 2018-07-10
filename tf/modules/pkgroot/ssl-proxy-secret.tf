@@ -5,8 +5,8 @@ resource "kubernetes_secret" "ssl_proxy" {
   }
 
   data {
-    proxycert = "${file("${path.root}/lsst-certs/lsst.codes/2017/lsst.codes_chain.pem")}"
-    proxykey  = "${file("${path.root}/lsst-certs/lsst.codes/2017/lsst.codes.key")}"
-    dhparam   = "${file("${path.root}/dhparam.pem")}"
+    proxycert = "${var.proxycert}"
+    proxykey  = "${var.proxykey}"
+    dhparam   = "${var.dhparam}"
   }
 }
