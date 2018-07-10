@@ -50,4 +50,8 @@ module "pkgroot-redirect" {
   k8s_client_certificate     = "${module.gke.client_certificate}"
   k8s_client_key             = "${module.gke.client_key}"
   k8s_cluster_ca_certificate = "${module.gke.cluster_ca_certificate}"
+
+  proxycert = "${file("${path.root}/lsst-certs/sw.lsstcorp.org/sw.lsstcorp.org.20170530_chain.pem")}"
+  proxykey  = "${file("${path.root}/lsst-certs/sw.lsstcorp.org/sw.lsstcorp.org.20170530.key")}"
+  dhparam   = "${file("${path.root}/dhparam.pem")}"
 }
