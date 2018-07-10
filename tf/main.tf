@@ -28,6 +28,10 @@ module "pkgroot" {
 
   # prod s3 bucket is > 1TiB
   pkgroot_storage_size = "2Ti"
+
+  proxycert = "${file("${path.root}/lsst-certs/lsst.codes/2018/lsst.codes_chain.pem")}"
+  proxykey  = "${file("${path.root}/lsst-certs/lsst.codes/2018/lsst.codes.key")}"
+  dhparam   = "${file("${path.root}/dhparam.pem")}"
 }
 
 module "doxygen" {
