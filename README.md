@@ -8,6 +8,7 @@ tl;dr
 
     bundle install
     bundle exec rake creds
+    # edit TF_VAR_env_name=<env name> in creds.sh
     . creds.sh
 
     cd tf
