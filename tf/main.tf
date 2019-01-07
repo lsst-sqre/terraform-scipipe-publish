@@ -1,8 +1,25 @@
 module "gke" {
-  source             = "github.com/lsst-sqre/terraform-gke-std"
+  source = "github.com/lsst-sqre/terraform-gke-std"
+
   name               = "${local.gke_cluster_name}"
   google_project     = "${var.google_project}"
+  gke_version        = "latest"
   initial_node_count = 3
+  machine_type       = "n1-standard-1"
+}
+
+resource "null_resource" "gcloud_container_clusters_credentials" {
+  triggers = {
+    google_containre_cluster_endpoint = "${module.gke.id}"
+  }
+
+  provisioner "local-exec" {
+    command = "gcloud container clusters get-credentials ${local.gke_cluster_name}"
+  }
+
+  depends_on = [
+    "module.gke",
+  ]
 }
 
 provider "kubernetes" {
