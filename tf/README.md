@@ -8,11 +8,11 @@
 | aws\_access\_key | AWS access key id. | string | n/a | yes |
 | aws\_default\_region | AWS region to launch servers. | string | `"us-east-1"` | no |
 | aws\_secret\_key | AWS secret access key. | string | n/a | yes |
-| aws\_zone\_id | route53 Hosted Zone ID to manage DNS records in. | string | `"Z3TH0HRSNU67AM"` | no |
+| aws\_zone\_id | route53 Hosted Zone ID to manage DNS records in. | string | n/a | yes |
 | deploy\_name | Name of deployment. | string | `"publish-release"` | no |
-| domain\_name | DNS domain name to use when creating route53 records. | string | `"lsst.codes"` | no |
+| domain\_name | DNS domain name to use when creating route53 records. | string | n/a | yes |
 | env\_name | Name of deployment environment. | string | n/a | yes |
-| google\_project | google cloud project ID | string | `"plasma-geode-127520"` | no |
+| google\_project | google cloud project ID | string | n/a | yes |
 
 ## Outputs
 
