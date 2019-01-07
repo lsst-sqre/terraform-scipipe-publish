@@ -1,6 +1,19 @@
+locals {
+  #pkgroot_bucket      = "${local.fqdn}-${var.aws_default_region}"
+  pkgroot_bucket      = "${local.fqdn}"
+  pkgroot_logs_bucket = "${local.pkgroot_bucket}-logs"
+
+  # the bucket postfix is "-backups" (note the plural) to be consistent with
+  # what other sqre devs have done while the non-plural is used in tf resource
+  # names.
+  pkgroot_backups_bucket = "${local.pkgroot_bucket}-backups"
+
+  pkgroot_backups_logs_bucket = "${local.pkgroot_backups_bucket}-logs"
+}
+
 resource "aws_s3_bucket" "eups" {
   region        = "${var.aws_default_region}"
-  bucket        = "${data.template_file.fqdn.rendered}"
+  bucket        = "${local.pkgroot_bucket}"
   acl           = "private"
   force_destroy = false
 
@@ -21,16 +34,14 @@ resource "aws_s3_bucket_metric" "pkgroot" {
 
 resource "aws_s3_bucket" "pkgroot_logs" {
   region        = "${var.aws_default_region}"
-  bucket        = "${data.template_file.fqdn.rendered}-logs"
+  bucket        = "${local.pkgroot_logs_bucket}"
   acl           = "log-delivery-write"
   force_destroy = false
 }
 
-# the bucket postfix is "-backups" (note the plural) to be consistent with what
-# other sqre devs have done while the non-plural is used in tf resource names.
 resource "aws_s3_bucket" "eups_backups" {
   region        = "${var.aws_default_region}"
-  bucket        = "${aws_s3_bucket.eups.id}-backups"
+  bucket        = "${local.pkgroot_backups_bucket}"
   acl           = "private"
   force_destroy = false
 
@@ -105,7 +116,7 @@ resource "aws_s3_bucket_metric" "pkgroot_backups" {
 
 resource "aws_s3_bucket" "pkgroot_backups_logs" {
   region        = "${var.aws_default_region}"
-  bucket        = "${data.template_file.fqdn.rendered}-backups-logs"
+  bucket        = "${local.pkgroot_backups_logs_bucket}"
   acl           = "log-delivery-write"
   force_destroy = false
 }

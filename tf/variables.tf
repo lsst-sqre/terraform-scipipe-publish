@@ -35,7 +35,7 @@ variable "google_project" {
   default     = "plasma-geode-127520"
 }
 
-# Name of google cloud container cluster to deploy into
-data "template_file" "gke_cluster_name" {
-  template = "${var.deploy_name}-${var.env_name}"
+locals {
+  # Name of google cloud container cluster to deploy into
+  gke_cluster_name = "${var.deploy_name}-${var.env_name}"
 }
