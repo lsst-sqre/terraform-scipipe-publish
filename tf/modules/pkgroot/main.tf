@@ -1,5 +1,5 @@
 module "push_user" {
-  source = "github.com/lsst-sqre/tf_aws_iam_user"
+  source = "git::https://github.com/lsst-sqre/terraform-aws-iam-user"
 
   name = "${var.env_name}-eups-push"
 
@@ -31,7 +31,7 @@ EOF
 }
 
 module "pull_user" {
-  source = "github.com/lsst-sqre/tf_aws_iam_user"
+  source = "git::https://github.com/lsst-sqre/terraform-aws-iam-user"
 
   name = "${var.env_name}-eups-pull"
 
@@ -62,7 +62,7 @@ EOF
 }
 
 module "backup_user" {
-  source = "github.com/lsst-sqre/tf_aws_iam_user"
+  source = "git::https://github.com/lsst-sqre/terraform-aws-iam-user"
 
   name = "${var.env_name}-eups-backup"
 
@@ -113,7 +113,7 @@ EOF
 }
 
 module "tag_admin_user" {
-  source = "github.com/lsst-sqre/tf_aws_iam_user"
+  source = "git::https://github.com/lsst-sqre/terraform-aws-iam-user"
 
   name = "${var.env_name}-eups-tag-admin"
 
