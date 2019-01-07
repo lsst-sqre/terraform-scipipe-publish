@@ -1,7 +1,8 @@
 deployment for EUPS_PKGROOT + doxygen html
 ===
 
-[![Build Status](https://travis-ci.org/lsst-sqre/deploy-publish-release.png)](https://travis-ci.org/lsst-sqre/deploy-publish-release)
+[![Build
+Status](https://travis-ci.org/lsst-sqre/terraform-scipipe-publish.png)](https://travis-ci.org/lsst-sqre/terraform-scipipe-publish)
 
 tl;dr
 ---
