@@ -1,16 +1,3 @@
-provider "aws" {
-  version = "~> 1.21"
-}
-
-provider "kubernetes" {
-  version = "~> 1.1"
-
-  host                   = "${var.k8s_host}"
-  client_certificate     = "${base64decode("${var.k8s_client_certificate}")}"
-  client_key             = "${base64decode("${var.k8s_client_key}")}"
-  cluster_ca_certificate = "${base64decode("${var.k8s_cluster_ca_certificate}")}"
-}
-
 module "push_user" {
   source = "github.com/lsst-sqre/tf_aws_iam_user"
 

@@ -5,6 +5,15 @@ module "gke" {
   initial_node_count = 3
 }
 
+provider "kubernetes" {
+  version = "~> 1.4"
+
+  load_config_file = true
+
+  host                   = "${module.gke.host}"
+  cluster_ca_certificate = "${base64decode(module.gke.cluster_ca_certificate)}"
+}
+
 module "pkgroot" {
   source       = "modules/pkgroot"
   aws_zone_id  = "${var.aws_zone_id}"
@@ -12,11 +21,7 @@ module "pkgroot" {
   service_name = "eups"
   domain_name  = "${var.domain_name}"
 
-  k8s_namespace              = "pkgroot"
-  k8s_host                   = "${module.gke.host}"
-  k8s_client_certificate     = "${module.gke.client_certificate}"
-  k8s_client_key             = "${module.gke.client_key}"
-  k8s_cluster_ca_certificate = "${module.gke.cluster_ca_certificate}"
+  k8s_namespace = "pkgroot"
 
   # prod s3 bucket is > 1TiB
   pkgroot_storage_size = "2Ti"
@@ -41,11 +46,7 @@ module "pkgroot-redirect" {
   service_name = "eups-redirect"
   domain_name  = "${var.domain_name}"
 
-  k8s_namespace              = "pkgroot-redirect"
-  k8s_host                   = "${module.gke.host}"
-  k8s_client_certificate     = "${module.gke.client_certificate}"
-  k8s_client_key             = "${module.gke.client_key}"
-  k8s_cluster_ca_certificate = "${module.gke.cluster_ca_certificate}"
+  k8s_namespace = "pkgroot-redirect"
 
   proxycert = "${file("${path.root}/lsst-certs/sw.lsstcorp.org/sw.lsstcorp.org.20170530_chain.pem")}"
   proxykey  = "${file("${path.root}/lsst-certs/sw.lsstcorp.org/sw.lsstcorp.org.20170530.key")}"

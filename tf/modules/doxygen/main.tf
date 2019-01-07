@@ -1,7 +1,3 @@
-provider "aws" {
-  version = "~> 1.21"
-}
-
 module "push_user" {
   source = "github.com/lsst-sqre/tf_aws_iam_user"
 

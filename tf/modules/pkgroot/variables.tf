@@ -22,11 +22,6 @@ variable "domain_name" {
   default     = "lsst.codes"
 }
 
-variable "k8s_host" {}
-variable "k8s_client_certificate" {}
-variable "k8s_client_key" {}
-variable "k8s_cluster_ca_certificate" {}
-
 variable "k8s_namespace" {
   description = "k8s namespace to manage resources within."
   default     = "pkgroot"
