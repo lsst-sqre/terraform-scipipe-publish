@@ -1,7 +1,0 @@
-bin
-dhparam.pem
-downloads/
-lsst-certs/
-override.tf
-.terraform
-*tfstate*
