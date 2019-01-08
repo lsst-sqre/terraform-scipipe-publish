@@ -1,5 +1,5 @@
 locals {
-  #pkgroot_bucket      = "${local.fqdn}-${var.aws_default_region}"
+  #pkgroot_bucket      = "${local.fqdn}-${var.aws_primary_region}"
   pkgroot_bucket      = "${local.fqdn}"
   pkgroot_logs_bucket = "${local.pkgroot_bucket}-logs"
 
@@ -12,7 +12,7 @@ locals {
 }
 
 resource "aws_s3_bucket" "eups" {
-  region        = "${var.aws_default_region}"
+  region        = "${var.aws_primary_region}"
   bucket        = "${local.pkgroot_bucket}"
   acl           = "private"
   force_destroy = false
@@ -33,14 +33,14 @@ resource "aws_s3_bucket_metric" "pkgroot" {
 }
 
 resource "aws_s3_bucket" "pkgroot_logs" {
-  region        = "${var.aws_default_region}"
+  region        = "${var.aws_primary_region}"
   bucket        = "${local.pkgroot_logs_bucket}"
   acl           = "log-delivery-write"
   force_destroy = false
 }
 
 resource "aws_s3_bucket" "eups_backups" {
-  region        = "${var.aws_default_region}"
+  region        = "${var.aws_primary_region}"
   bucket        = "${local.pkgroot_backups_bucket}"
   acl           = "private"
   force_destroy = false
@@ -115,7 +115,7 @@ resource "aws_s3_bucket_metric" "pkgroot_backups" {
 }
 
 resource "aws_s3_bucket" "pkgroot_backups_logs" {
-  region        = "${var.aws_default_region}"
+  region        = "${var.aws_primary_region}"
   bucket        = "${local.pkgroot_backups_logs_bucket}"
   acl           = "log-delivery-write"
   force_destroy = false

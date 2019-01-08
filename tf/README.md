@@ -5,7 +5,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| aws\_default\_region | AWS region to launch servers. | string | `"us-east-1"` | no |
+| aws\_primary\_region | AWS region to launch servers. | string | `"us-east-1"` | no |
 | aws\_zone\_id | route53 Hosted Zone ID to manage DNS records in. | string | n/a | yes |
 | deploy\_name | Name of deployment. | string | `"publish-release"` | no |
 | domain\_name | DNS domain name to use when creating route53 records. | string | n/a | yes |
