@@ -36,6 +36,12 @@ variable "tls_dhparam_path" {
   description = "wildcard tls private key."
 }
 
+# prod s3 bucket must be > 1TiB
+variable "pkgroot_storage_size" {
+  description = "Size of gcloud persistent volume claim. E.g.: 200Gi or 1Ti"
+  default     = "10Gi"
+}
+
 locals {
   # Name of google cloud container cluster to deploy into
   gke_cluster_name = "${var.deploy_name}-${var.env_name}"

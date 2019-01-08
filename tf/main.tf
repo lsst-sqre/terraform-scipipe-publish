@@ -52,8 +52,7 @@ module "pkgroot" {
 
   k8s_namespace = "${kubernetes_namespace.pkgroot.metadata.0.name}"
 
-  # prod s3 bucket is > 1TiB
-  pkgroot_storage_size = "2Ti"
+  pkgroot_storage_size = "${var.pkgroot_storage_size}"
 
   proxycert = "${local.tls_crt}"
   proxykey  = "${local.tls_key}"
