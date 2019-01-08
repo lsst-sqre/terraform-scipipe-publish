@@ -1,3 +1,9 @@
+provider "aws" {
+  version = "~> 1.54"
+
+  region = "${var.aws_primary_region}"
+}
+
 module "gke" {
   source = "github.com/lsst-sqre/terraform-gke-std"
 
