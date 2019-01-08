@@ -24,7 +24,23 @@ variable "google_project" {
   description = "google cloud project ID"
 }
 
+variable "tls_crt_path" {
+  description = "wildcard tls certificate."
+}
+
+variable "tls_key_path" {
+  description = "wildcard tls private key."
+}
+
+variable "tls_dhparam_path" {
+  description = "wildcard tls private key."
+}
+
 locals {
   # Name of google cloud container cluster to deploy into
   gke_cluster_name = "${var.deploy_name}-${var.env_name}"
+
+  tls_crt     = "${file(var.tls_crt_path)}"
+  tls_key     = "${file(var.tls_key_path)}"
+  tls_dhparam = "${file(var.tls_dhparam_path)}"
 }

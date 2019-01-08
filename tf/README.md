@@ -11,6 +11,9 @@
 | domain\_name | DNS domain name to use when creating route53 records. | string | n/a | yes |
 | env\_name | Name of deployment environment. | string | n/a | yes |
 | google\_project | google cloud project ID | string | n/a | yes |
+| tls\_crt\_path | wildcard tls certificate. | string | n/a | yes |
+| tls\_dhparam\_path | wildcard tls private key. | string | n/a | yes |
+| tls\_key\_path | wildcard tls private key. | string | n/a | yes |
 
 ## Outputs
 
