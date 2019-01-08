@@ -26,9 +26,8 @@ variable "k8s_namespace" {
 }
 
 variable "pkgroot_storage_size" {
-  # E.g.: "200Gi" "1Ti"
-  description = "Size of gcloud persistent volume claim"
-  default     = "1Ti"
+  description = "Size of gcloud persistent volume claim. E.g.: 200Gi or 1Ti"
+  default     = "10Gi"
 }
 
 variable "proxycert" {}
