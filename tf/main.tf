@@ -37,6 +37,12 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(module.gke.cluster_ca_certificate)}"
 }
 
+resource "kubernetes_namespace" "pkgroot" {
+  metadata {
+    name = "pkgroot"
+  }
+}
+
 module "pkgroot" {
   source       = "modules/pkgroot"
   aws_zone_id  = "${var.aws_zone_id}"
@@ -44,7 +50,7 @@ module "pkgroot" {
   service_name = "eups"
   domain_name  = "${var.domain_name}"
 
-  k8s_namespace = "pkgroot"
+  k8s_namespace = "${kubernetes_namespace.pkgroot.metadata.0.name}"
 
   # prod s3 bucket is > 1TiB
   pkgroot_storage_size = "2Ti"
@@ -62,6 +68,12 @@ module "doxygen" {
   domain_name  = "${var.domain_name}"
 }
 
+resource "kubernetes_namespace" "pkgroot_redirect" {
+  metadata {
+    name = "pkgroot-redirect"
+  }
+}
+
 module "pkgroot-redirect" {
   source       = "github.com/lsst-sqre/terraform-pkgroot-redirect//tf?ref=master"
   aws_zone_id  = "${var.aws_zone_id}"
@@ -69,7 +81,7 @@ module "pkgroot-redirect" {
   service_name = "eups-redirect"
   domain_name  = "${var.domain_name}"
 
-  k8s_namespace = "pkgroot-redirect"
+  k8s_namespace = "${kubernetes_namespace.pkgroot_redirect.metadata.0.name}"
 
   proxycert = "${local.tls_crt}"
   proxykey  = "${local.tls_key}"
