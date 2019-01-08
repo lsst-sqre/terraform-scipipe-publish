@@ -13,7 +13,7 @@ variable "env_name" {
 
 variable "deploy_name" {
   description = "Name of deployment."
-  default     = "publish-release"
+  default     = "scipipe-publish"
 }
 
 variable "domain_name" {
