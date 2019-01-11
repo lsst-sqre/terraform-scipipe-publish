@@ -114,5 +114,8 @@ resource "kubernetes_replication_controller" "pkgroot" {
   depends_on = [
     # attempt to avoid startup crashes due to missing env vars
     "kubernetes_secret.s3sync",
+
+    # attempt to force the rc/pods to be destroyed first
+    "kubernetes_persistent_volume_claim.pkgroot",
   ]
 }
