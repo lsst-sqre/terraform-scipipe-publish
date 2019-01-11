@@ -1,5 +1,5 @@
 output "fqdn" {
-  value = "${data.template_file.fqdn.rendered}"
+  value = "${local.fqdn}"
 }
 
 output "EUPS_S3_BUCKET" {

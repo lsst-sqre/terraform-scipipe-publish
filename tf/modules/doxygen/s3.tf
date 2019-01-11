@@ -1,6 +1,12 @@
+locals {
+  #doxygen_bucket      = "${local.fqdn}-${var.aws_primary_region}"
+  doxygen_bucket      = "${local.fqdn}"
+  doxygen_logs_bucket = "${local.doxygen_bucket}-logs"
+}
+
 resource "aws_s3_bucket" "doxygen" {
-  region        = "${var.aws_default_region}"
-  bucket        = "${data.template_file.fqdn.rendered}"
+  region        = "${var.aws_primary_region}"
+  bucket        = "${local.doxygen_bucket}"
   acl           = "public-read"
   force_destroy = false
 
@@ -27,8 +33,8 @@ resource "aws_s3_bucket_metric" "doxygen" {
 }
 
 resource "aws_s3_bucket" "doxygen_logs" {
-  region        = "${var.aws_default_region}"
-  bucket        = "${data.template_file.fqdn.rendered}-logs"
+  region        = "${var.aws_primary_region}"
+  bucket        = "${local.doxygen_logs_bucket}"
   acl           = "log-delivery-write"
   force_destroy = false
 }

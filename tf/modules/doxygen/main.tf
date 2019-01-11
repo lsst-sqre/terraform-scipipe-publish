@@ -1,13 +1,5 @@
-provider "aws" {
-  version = "~> 1.21"
-}
-
-provider "template" {
-  version = "~> 1.0"
-}
-
 module "push_user" {
-  source = "github.com/lsst-sqre/tf_aws_iam_user"
+  source = "git::https://github.com/lsst-sqre/terraform-aws-iam-user"
 
   name = "${var.env_name}-doxygen-push"
 
