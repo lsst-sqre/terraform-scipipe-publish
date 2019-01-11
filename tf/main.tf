@@ -1,3 +1,11 @@
+provider "google" {
+  version = "~> 1.20"
+}
+
+provider "null" {
+  version = "~> 1.0"
+}
+
 provider "aws" {
   version = "~> 1.54"
 
