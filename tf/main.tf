@@ -52,11 +52,13 @@ resource "kubernetes_namespace" "pkgroot" {
 }
 
 module "pkgroot" {
-  source       = "modules/pkgroot"
+  source = "modules/pkgroot"
+
   aws_zone_id  = "${var.aws_zone_id}"
   env_name     = "${var.env_name}"
   service_name = "eups"
   domain_name  = "${var.domain_name}"
+  dns_enable   = "${var.dns_enable}"
 
   k8s_namespace = "${kubernetes_namespace.pkgroot.metadata.0.name}"
 
@@ -68,11 +70,13 @@ module "pkgroot" {
 }
 
 module "doxygen" {
-  source       = "modules/doxygen"
+  source = "modules/doxygen"
+
   aws_zone_id  = "${var.aws_zone_id}"
   env_name     = "${var.env_name}"
   service_name = "doxygen"
   domain_name  = "${var.domain_name}"
+  dns_enable   = "${var.dns_enable}"
 }
 
 resource "kubernetes_namespace" "pkgroot_redirect" {
@@ -82,11 +86,13 @@ resource "kubernetes_namespace" "pkgroot_redirect" {
 }
 
 module "pkgroot-redirect" {
-  source       = "github.com/lsst-sqre/terraform-pkgroot-redirect//tf?ref=master"
+  source = "github.com/lsst-sqre/terraform-pkgroot-redirect//tf?ref=master"
+
   aws_zone_id  = "${var.aws_zone_id}"
   env_name     = "${var.env_name}"
   service_name = "eups-redirect"
   domain_name  = "${var.domain_name}"
+  dns_enable   = "${var.dns_enable}"
 
   k8s_namespace = "${kubernetes_namespace.pkgroot_redirect.metadata.0.name}"
 

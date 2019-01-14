@@ -20,6 +20,11 @@ variable "domain_name" {
   description = "DNS domain name to use when creating route53 records."
 }
 
+variable "dns_enable" {
+  description = "create route53 dns records."
+  default     = false
+}
+
 variable "k8s_namespace" {
   description = "k8s namespace to manage resources within."
   default     = "pkgroot"

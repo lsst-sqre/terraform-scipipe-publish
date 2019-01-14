@@ -8,6 +8,7 @@
 | aws\_primary\_region | AWS region to launch servers. | string | `"us-east-1"` | no |
 | aws\_zone\_id | route53 Hosted Zone ID to manage DNS records in. | string | n/a | yes |
 | deploy\_name | Name of deployment. | string | `"scipipe-publish"` | no |
+| dns\_enable | create route53 dns records. | string | `"false"` | no |
 | domain\_name | DNS domain name to use when creating route53 records. | string | n/a | yes |
 | env\_name | Name of deployment environment. | string | n/a | yes |
 | google\_project | google cloud project ID | string | n/a | yes |
