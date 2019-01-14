@@ -98,7 +98,7 @@ module "pkgroot-redirect" {
 
   k8s_namespace = "${kubernetes_namespace.pkgroot_redirect.metadata.0.name}"
 
-  proxycert = "${local.tls_crt}"
-  proxykey  = "${local.tls_key}"
-  dhparam   = "${local.tls_dhparam}"
+  proxycert = "${local.redirect_tls_crt}"
+  proxykey  = "${local.redirect_tls_key}"
+  dhparam   = "${local.redirect_tls_dhparam}"
 }
