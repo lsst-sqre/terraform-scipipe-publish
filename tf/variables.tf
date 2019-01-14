@@ -20,6 +20,11 @@ variable "domain_name" {
   description = "DNS domain name to use when creating route53 records."
 }
 
+variable "dns_enable" {
+  description = "create route53 dns records."
+  default     = false
+}
+
 variable "google_project" {
   description = "google cloud project ID"
 }
