@@ -4,10 +4,14 @@ language: c
 matrix:
   include:
     - env: TEST=markdownlint
-      language: c
       services:
         - docker
       script: ./tests/mdl.sh
+
+    - env: TEST=pre-commit
+      services:
+        - docker
+      script: ./tests/pre-commit.sh
 
     - env: TEST=terraform
       services:
@@ -25,13 +29,11 @@ matrix:
       script: ./tests/shellcheck.sh
 
     - env: TEST=hadolint
-      language: c
       services:
         - docker
       script: ./tests/hadolint.sh
 
     - env: TEST=make
-      language: c
       script: ./tests/make.sh
 branches:
   only:
