@@ -24,20 +24,6 @@ module "gke" {
   machine_type       = "n1-standard-1"
 }
 
-resource "null_resource" "gcloud_container_clusters_credentials" {
-  triggers = {
-    google_containre_cluster_endpoint = "${module.gke.id}"
-  }
-
-  provisioner "local-exec" {
-    command = "gcloud container clusters get-credentials ${local.gke_cluster_name}"
-  }
-
-  depends_on = [
-    "module.gke",
-  ]
-}
-
 provider "kubernetes" {
   # 1.5.0 changes podspec and wants to remove privileged from rc(s) without
   # syntax changes
