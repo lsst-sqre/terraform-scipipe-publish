@@ -51,18 +51,6 @@ variable "tls_dhparam_path" {
   description = "tls dhparam."
 }
 
-variable "redirect_tls_crt_path" {
-  description = "sw.lsstcorp.org tls cert."
-}
-
-variable "redirect_tls_key_path" {
-  description = "sw.lsstcorp.org tls private key."
-}
-
-variable "redirect_tls_dhparam_path" {
-  description = "redirect tls dhparam."
-}
-
 # prod s3 bucket must be > 1TiB
 variable "pkgroot_storage_size" {
   description = "Size of gcloud persistent volume claim. E.g.: 200Gi or 1Ti"
@@ -76,8 +64,4 @@ locals {
   tls_crt     = "${file(var.tls_crt_path)}"
   tls_key     = "${file(var.tls_key_path)}"
   tls_dhparam = "${file(var.tls_dhparam_path)}"
-
-  redirect_tls_crt     = "${file(var.redirect_tls_crt_path)}"
-  redirect_tls_key     = "${file(var.redirect_tls_key_path)}"
-  redirect_tls_dhparam = "${file(var.redirect_tls_dhparam_path)}"
 }

@@ -15,9 +15,6 @@
 | google\_region | google cloud region | string | `"us-central1"` | no |
 | google\_zone | google cloud region/zone | string | `"us-central1-b"` | no |
 | pkgroot\_storage\_size | Size of gcloud persistent volume claim. E.g.: 200Gi or 1Ti | string | `"10Gi"` | no |
-| redirect\_tls\_crt\_path | sw.lsstcorp.org tls cert. | string | n/a | yes |
-| redirect\_tls\_dhparam\_path | redirect tls dhparam. | string | n/a | yes |
-| redirect\_tls\_key\_path | sw.lsstcorp.org tls private key. | string | n/a | yes |
 | tls\_crt\_path | wildcard tls certificate. | string | n/a | yes |
 | tls\_dhparam\_path | tls dhparam. | string | n/a | yes |
 | tls\_key\_path | wildcard tls private key. | string | n/a | yes |
