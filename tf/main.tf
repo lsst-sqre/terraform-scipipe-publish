@@ -82,25 +82,3 @@ module "doxygen" {
   domain_name  = "${var.domain_name}"
   dns_enable   = "${var.dns_enable}"
 }
-
-resource "kubernetes_namespace" "pkgroot_redirect" {
-  metadata {
-    name = "pkgroot-redirect"
-  }
-}
-
-module "pkgroot-redirect" {
-  source = "github.com/lsst-sqre/terraform-pkgroot-redirect//tf?ref=master"
-
-  aws_zone_id  = "${var.aws_zone_id}"
-  env_name     = "${var.env_name}"
-  service_name = "eups-redirect"
-  domain_name  = "${var.domain_name}"
-  dns_enable   = "${var.dns_enable}"
-
-  k8s_namespace = "${kubernetes_namespace.pkgroot_redirect.metadata.0.name}"
-
-  proxycert = "${local.redirect_tls_crt}"
-  proxykey  = "${local.redirect_tls_key}"
-  dhparam   = "${local.redirect_tls_dhparam}"
-}
