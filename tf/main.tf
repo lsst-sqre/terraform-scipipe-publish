@@ -19,7 +19,7 @@ module "gke" {
   google_project     = "${var.google_project}"
   google_region      = "${var.google_region}"
   google_zone        = "${var.google_zone}"
-  gke_version        = "latest"
+  gke_version        = "${var.gke_version}"
   initial_node_count = 3
   machine_type       = "n1-standard-1"
 }

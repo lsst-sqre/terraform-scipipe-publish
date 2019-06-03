@@ -11,6 +11,7 @@
 | dns\_enable | create route53 dns records. | string | `"false"` | no |
 | domain\_name | DNS domain name to use when creating route53 records. | string | n/a | yes |
 | env\_name | Name of deployment environment. | string | n/a | yes |
+| gke\_version | gke master/node version | string | `"latest"` | no |
 | google\_project | google cloud project ID | string | n/a | yes |
 | google\_region | google cloud region | string | `"us-central1"` | no |
 | google\_zone | google cloud region/zone | string | `"us-central1-b"` | no |
