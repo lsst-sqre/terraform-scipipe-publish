@@ -5,5 +5,5 @@ resource "aws_route53_record" "pkgroot_www" {
   name    = "${local.fqdn}"
   type    = "A"
   ttl     = "60"
-  records = ["${kubernetes_service.ssl_proxy.load_balancer_ingress.0.ip}"]
+  records = ["${var.ingress_ip}"]
 }

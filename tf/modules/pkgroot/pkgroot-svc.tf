@@ -1,7 +1,7 @@
 resource "kubernetes_service" "pkgroot" {
   metadata {
-    namespace = "${var.k8s_namespace}"
     name      = "pkgroot-service"
+    namespace = "${var.k8s_namespace}"
 
     labels {
       name = "pkgroot-service"

@@ -18,8 +18,8 @@ locals {
 
 resource "kubernetes_deployment" "pkgroot" {
   metadata {
-    namespace = "${var.k8s_namespace}"
     name      = "pkgroot-deploy"
+    namespace = "${var.k8s_namespace}"
 
     labels {
       name = "pkgroot-deploy"
