@@ -11,7 +11,7 @@ resource "kubernetes_service" "pkgroot" {
 
   spec {
     selector {
-      name = "pkgroot-rc"
+      name = "pkgroot-deploy"
       app  = "pkgroot"
     }
 
