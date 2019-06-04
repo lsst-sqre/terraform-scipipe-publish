@@ -32,6 +32,33 @@ provider "kubernetes" {
   token                  = "${module.gke.token}"
 }
 
+resource "kubernetes_namespace" "tiller" {
+  metadata {
+    name = "tiller"
+  }
+}
+
+module "tiller" {
+  source = "git::https://github.com/lsst-sqre/terraform-tinfoil-tiller.git?ref=0.9.x"
+
+  namespace = "${kubernetes_namespace.tiller.metadata.0.name}"
+}
+
+provider "helm" {
+  version = "~> 0.9.1"
+
+  service_account = "${module.tiller.service_account}"
+  namespace       = "${module.tiller.namespace}"
+  install_tiller  = false
+
+  kubernetes {
+    load_config_file       = false
+    host                   = "${module.gke.host}"
+    cluster_ca_certificate = "${base64decode(module.gke.cluster_ca_certificate)}"
+    token                  = "${module.gke.token}"
+  }
+}
+
 resource "kubernetes_namespace" "pkgroot" {
   metadata {
     name = "pkgroot"
