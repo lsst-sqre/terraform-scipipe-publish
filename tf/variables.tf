@@ -25,6 +25,11 @@ variable "dns_enable" {
   default     = false
 }
 
+variable "dns_overwrite" {
+  description = "overwrite pre-existing DNS records."
+  default     = false
+}
+
 variable "google_project" {
   description = "google cloud project ID"
 }
@@ -62,9 +67,54 @@ variable "gke_version" {
   default     = "latest"
 }
 
+variable "grafana_oauth_client_id" {
+  description = "github oauth Client ID for grafana"
+}
+
+variable "grafana_oauth_client_secret" {
+  description = "github oauth Client Secret for grafana."
+}
+
+variable "grafana_oauth_team_ids" {
+  description = "github team id (integer value treated as string)"
+}
+
+variable "grafana_admin_user" {
+  description = "grafana admin account name."
+  default     = "admin"
+}
+
+variable "grafana_admin_pass" {
+  description = "grafana admin account passphrase."
+}
+
+variable "prometheus_oauth_github_org" {
+  description = "limit access to prometheus dashboard to members of this org"
+}
+
+variable "prometheus_oauth_client_id" {
+  description = "github oauth client id"
+}
+
+variable "prometheus_oauth_client_secret" {
+  description = "github oauth client secret"
+}
+
+variable "storage_class" {
+  description = "Storage class to be used for all persistent disks. For a deployment on k3s use 'local-path'."
+  default     = "pd-ssd"
+}
+
 locals {
   # Name of google cloud container cluster to deploy into
   gke_cluster_name = "${var.deploy_name}-${var.env_name}"
+
+  # remove "<env>-" prefix for production
+  dns_prefix = "${replace("${var.env_name}-", "prod-", "")}"
+
+  prometheus_k8s_namespace    = "monitoring"
+  grafana_k8s_namespace       = "grafana"
+  nginx_ingress_k8s_namespace = "nginx-ingress"
 
   tls_crt     = "${file(var.tls_crt_path)}"
   tls_key     = "${file(var.tls_key_path)}"
