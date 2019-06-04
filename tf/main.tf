@@ -11,7 +11,7 @@ provider "null" {
 }
 
 provider "aws" {
-  version = "~> 1.54"
+  version = "~> 2.13.0"
 
   region = "${var.aws_primary_region}"
 }
