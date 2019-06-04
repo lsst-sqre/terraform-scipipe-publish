@@ -6,10 +6,6 @@ provider "google" {
   zone    = "${var.google_zone}"
 }
 
-provider "null" {
-  version = "~> 1.0"
-}
-
 provider "aws" {
   version = "~> 2.13.0"
 
