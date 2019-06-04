@@ -22,9 +22,7 @@ module "gke" {
 }
 
 provider "kubernetes" {
-  # 1.5.0 changes podspec and wants to remove privileged from rc(s) without
-  # syntax changes
-  version = "~> 1.4.0"
+  version = "~> 1.7.0"
 
   load_config_file       = false
   host                   = "${module.gke.host}"
