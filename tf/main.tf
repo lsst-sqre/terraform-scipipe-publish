@@ -17,7 +17,7 @@ module "gke" {
 
   name               = "${local.gke_cluster_name}"
   gke_version        = "${var.gke_version}"
-  initial_node_count = 3
+  initial_node_count = 2
   machine_type       = "n1-standard-1"
 }
 
