@@ -1,5 +1,9 @@
 provider "google" {
   version = "~> 1.20"
+
+  project = "${var.google_project}"
+  region  = "${var.google_region}"
+  zone    = "${var.google_zone}"
 }
 
 provider "null" {
@@ -13,29 +17,12 @@ provider "aws" {
 }
 
 module "gke" {
-  source = "github.com/lsst-sqre/terraform-gke-std"
+  source = "git::https://github.com/lsst-sqre/terraform-gke-std?ref=2.x"
 
   name               = "${local.gke_cluster_name}"
-  google_project     = "${var.google_project}"
-  google_region      = "${var.google_region}"
-  google_zone        = "${var.google_zone}"
-  gke_version        = "latest"
+  gke_version        = "${var.gke_version}"
   initial_node_count = 3
   machine_type       = "n1-standard-1"
-}
-
-resource "null_resource" "gcloud_container_clusters_credentials" {
-  triggers = {
-    google_containre_cluster_endpoint = "${module.gke.id}"
-  }
-
-  provisioner "local-exec" {
-    command = "gcloud container clusters get-credentials ${local.gke_cluster_name}"
-  }
-
-  depends_on = [
-    "module.gke",
-  ]
 }
 
 provider "kubernetes" {
@@ -43,10 +30,10 @@ provider "kubernetes" {
   # syntax changes
   version = "~> 1.4.0"
 
-  load_config_file = true
-
+  load_config_file       = false
   host                   = "${module.gke.host}"
   cluster_ca_certificate = "${base64decode(module.gke.cluster_ca_certificate)}"
+  token                  = "${module.gke.token}"
 }
 
 resource "kubernetes_namespace" "pkgroot" {

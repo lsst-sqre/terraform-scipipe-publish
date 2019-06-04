@@ -57,6 +57,11 @@ variable "pkgroot_storage_size" {
   default     = "10Gi"
 }
 
+variable "gke_version" {
+  description = "gke master/node version"
+  default     = "latest"
+}
+
 locals {
   # Name of google cloud container cluster to deploy into
   gke_cluster_name = "${var.deploy_name}-${var.env_name}"
