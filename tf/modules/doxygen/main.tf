@@ -1,5 +1,5 @@
 module "push_user" {
-  source = "git::https://github.com/lsst-sqre/terraform-aws-iam-user"
+  source = "git::https://github.com/lsst-sqre/terraform-aws-iam-user?ref=1.0.0"
 
   name = "${var.env_name}-doxygen-push"
 
