@@ -12,6 +12,10 @@ provider "aws" {
   region = "${var.aws_primary_region}"
 }
 
+provider "vault" {
+  version = "~> 1.8.0"
+}
+
 module "gke" {
   source = "git::https://github.com/lsst-sqre/terraform-gke-std?ref=2.x"
 
