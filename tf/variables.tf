@@ -44,14 +44,6 @@ variable "google_zone" {
   default     = "us-central1-b"
 }
 
-variable "tls_crt_path" {
-  description = "wildcard tls certificate."
-}
-
-variable "tls_key_path" {
-  description = "wildcard tls private key."
-}
-
 # prod s3 bucket must be > 1TiB
 variable "pkgroot_storage_size" {
   description = "Size of gcloud persistent volume claim. E.g.: 200Gi or 1Ti"
@@ -61,6 +53,11 @@ variable "pkgroot_storage_size" {
 variable "gke_version" {
   description = "gke master/node version"
   default     = "latest"
+}
+
+variable "storage_class" {
+  description = "Storage class to be used for all persistent disks. For a deployment on k3s use 'local-path'."
+  default     = "pd-ssd"
 }
 
 data "vault_generic_secret" "grafana_oauth" {
@@ -109,9 +106,18 @@ variable "prometheus_oauth_github_org" {
   default     = "lsst-sqre"
 }
 
-variable "storage_class" {
-  description = "Storage class to be used for all persistent disks. For a deployment on k3s use 'local-path'."
-  default     = "pd-ssd"
+data "vault_generic_secret" "tls" {
+  path = "${local.vault_root}/tls"
+}
+
+variable "tls_crt" {
+  description = "wildcard tls certificate. (default: vault)"
+  default     = ""
+}
+
+variable "tls_key" {
+  description = "wildcard tls private key. (default: vault)"
+  default     = ""
 }
 
 locals {
@@ -125,9 +131,6 @@ locals {
   grafana_k8s_namespace       = "grafana"
   nginx_ingress_k8s_namespace = "nginx-ingress"
 
-  tls_crt = "${file(var.tls_crt_path)}"
-  tls_key = "${file(var.tls_key_path)}"
-
   vault_root = "secret/dm/square/${var.deploy_name}/${var.env_name}"
 
   grafana_oauth               = "${data.vault_generic_secret.grafana_oauth.data}"
@@ -140,4 +143,8 @@ locals {
   prometheus_oauth               = "${data.vault_generic_secret.prometheus_oauth.data}"
   prometheus_oauth_client_id     = "${var.prometheus_oauth_client_id != "" ? var.prometheus_oauth_client_id : local.prometheus_oauth["client_id"]}"
   prometheus_oauth_client_secret = "${var.prometheus_oauth_client_secret != "" ? var.prometheus_oauth_client_secret : local.prometheus_oauth["client_secret"]}"
+
+  tls     = "${data.vault_generic_secret.tls.data}"
+  tls_crt = "${var.tls_crt!= "" ? var.tls_crt: local.tls["crt"]}"
+  tls_key = "${var.tls_key!= "" ? var.tls_key: local.tls["key"]}"
 }

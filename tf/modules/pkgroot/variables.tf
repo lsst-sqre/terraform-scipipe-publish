@@ -35,11 +35,11 @@ variable "pkgroot_storage_size" {
   default     = "10Gi"
 }
 
-variable "tls_crt_path" {
+variable "tls_crt" {
   description = "wildcard tls certificate."
 }
 
-variable "tls_key_path" {
+variable "tls_key" {
   description = "wildcard tls private key."
 }
 
@@ -52,7 +52,4 @@ locals {
   dns_prefix = "${replace("${var.env_name}-", "prod-", "")}"
 
   fqdn = "${local.dns_prefix}${var.service_name}.${var.domain_name}"
-
-  tls_crt = "${file(var.tls_crt_path)}"
-  tls_key = "${file(var.tls_key_path)}"
 }

@@ -5,8 +5,8 @@ resource "kubernetes_secret" "pkgroot_tls" {
   }
 
   data {
-    tls.crt = "${local.tls_crt}"
-    tls.key = "${local.tls_key}"
+    tls.crt = "${var.tls_crt}"
+    tls.key = "${var.tls_key}"
   }
 }
 

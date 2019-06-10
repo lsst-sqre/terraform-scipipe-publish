@@ -24,8 +24,8 @@
 | prometheus\_oauth\_client\_secret | github oauth client secret. (default: vault) | string | `""` | no |
 | prometheus\_oauth\_github\_org | limit access to prometheus dashboard to members of this org | string | `"lsst-sqre"` | no |
 | storage\_class | Storage class to be used for all persistent disks. For a deployment on k3s use 'local-path'. | string | `"pd-ssd"` | no |
-| tls\_crt\_path | wildcard tls certificate. | string | n/a | yes |
-| tls\_key\_path | wildcard tls private key. | string | n/a | yes |
+| tls\_crt | wildcard tls certificate. (default: vault) | string | `""` | no |
+| tls\_key | wildcard tls private key. (default: vault) | string | `""` | no |
 
 ## Outputs
 
