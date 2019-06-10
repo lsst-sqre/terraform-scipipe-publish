@@ -1,0 +1,34 @@
+---
+rbac:
+  create: true
+controller:
+  stats:
+    enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "${prometheus_k8s_namespace}"
+  extraArgs:
+    v: 2
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: nodegroup
+                operator: In
+                values:
+                  - admin
+defaultBackend:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: nodegroup
+                operator: In
+                values:
+                  - admin

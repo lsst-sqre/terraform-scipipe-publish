@@ -1,19 +1,19 @@
 provider "google" {
-  version = "~> 1.20"
+  version = "~> 2.7.0"
 
   project = "${var.google_project}"
   region  = "${var.google_region}"
   zone    = "${var.google_zone}"
 }
 
-provider "null" {
-  version = "~> 1.0"
-}
-
 provider "aws" {
-  version = "~> 1.54"
+  version = "~> 2.13.0"
 
   region = "${var.aws_primary_region}"
+}
+
+provider "vault" {
+  version = "~> 1.8.0"
 }
 
 module "gke" {
@@ -21,19 +21,44 @@ module "gke" {
 
   name               = "${local.gke_cluster_name}"
   gke_version        = "${var.gke_version}"
-  initial_node_count = 3
+  initial_node_count = 2
   machine_type       = "n1-standard-1"
 }
 
 provider "kubernetes" {
-  # 1.5.0 changes podspec and wants to remove privileged from rc(s) without
-  # syntax changes
-  version = "~> 1.4.0"
+  version = "~> 1.7.0"
 
   load_config_file       = false
   host                   = "${module.gke.host}"
   cluster_ca_certificate = "${base64decode(module.gke.cluster_ca_certificate)}"
   token                  = "${module.gke.token}"
+}
+
+resource "kubernetes_namespace" "tiller" {
+  metadata {
+    name = "tiller"
+  }
+}
+
+module "tiller" {
+  source = "git::https://github.com/lsst-sqre/terraform-tinfoil-tiller.git?ref=0.9.x"
+
+  namespace = "${kubernetes_namespace.tiller.metadata.0.name}"
+}
+
+provider "helm" {
+  version = "~> 0.9.1"
+
+  service_account = "${module.tiller.service_account}"
+  namespace       = "${module.tiller.namespace}"
+  install_tiller  = false
+
+  kubernetes {
+    load_config_file       = false
+    host                   = "${module.gke.host}"
+    cluster_ca_certificate = "${base64decode(module.gke.cluster_ca_certificate)}"
+    token                  = "${module.gke.token}"
+  }
 }
 
 resource "kubernetes_namespace" "pkgroot" {
@@ -55,9 +80,9 @@ module "pkgroot" {
 
   pkgroot_storage_size = "${var.pkgroot_storage_size}"
 
-  proxycert = "${local.tls_crt}"
-  proxykey  = "${local.tls_key}"
-  dhparam   = "${local.tls_dhparam}"
+  tls_crt    = "${var.tls_crt}"
+  tls_key    = "${var.tls_key}"
+  ingress_ip = "${local.nginx_ingress_ip}"
 }
 
 module "doxygen" {

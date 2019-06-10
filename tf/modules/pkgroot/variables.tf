@@ -35,9 +35,17 @@ variable "pkgroot_storage_size" {
   default     = "10Gi"
 }
 
-variable "proxycert" {}
-variable "proxykey" {}
-variable "dhparam" {}
+variable "tls_crt" {
+  description = "wildcard tls certificate."
+}
+
+variable "tls_key" {
+  description = "wildcard tls private key."
+}
+
+variable "ingress_ip" {
+  description = "external ip address of nginx ingress service"
+}
 
 locals {
   # remove "<env>-" prefix for production
