@@ -25,7 +25,6 @@
 | prometheus\_oauth\_github\_org | limit access to prometheus dashboard to members of this org | string | `"lsst-sqre"` | no |
 | storage\_class | Storage class to be used for all persistent disks. For a deployment on k3s use 'local-path'. | string | `"pd-ssd"` | no |
 | tls\_crt\_path | wildcard tls certificate. | string | n/a | yes |
-| tls\_dhparam\_path | tls dhparam. | string | n/a | yes |
 | tls\_key\_path | wildcard tls private key. | string | n/a | yes |
 
 ## Outputs

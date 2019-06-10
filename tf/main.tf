@@ -80,10 +80,9 @@ module "pkgroot" {
 
   pkgroot_storage_size = "${var.pkgroot_storage_size}"
 
-  tls_crt_path     = "${var.tls_crt_path}"
-  tls_key_path     = "${var.tls_key_path}"
-  tls_dhparam_path = "${var.tls_dhparam_path}"
-  ingress_ip       = "${local.nginx_ingress_ip}"
+  tls_crt_path = "${var.tls_crt_path}"
+  tls_key_path = "${var.tls_key_path}"
+  ingress_ip   = "${local.nginx_ingress_ip}"
 }
 
 module "doxygen" {

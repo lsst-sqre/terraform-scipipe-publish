@@ -52,10 +52,6 @@ variable "tls_key_path" {
   description = "wildcard tls private key."
 }
 
-variable "tls_dhparam_path" {
-  description = "tls dhparam."
-}
-
 # prod s3 bucket must be > 1TiB
 variable "pkgroot_storage_size" {
   description = "Size of gcloud persistent volume claim. E.g.: 200Gi or 1Ti"
@@ -129,9 +125,8 @@ locals {
   grafana_k8s_namespace       = "grafana"
   nginx_ingress_k8s_namespace = "nginx-ingress"
 
-  tls_crt     = "${file(var.tls_crt_path)}"
-  tls_key     = "${file(var.tls_key_path)}"
-  tls_dhparam = "${file(var.tls_dhparam_path)}"
+  tls_crt = "${file(var.tls_crt_path)}"
+  tls_key = "${file(var.tls_key_path)}"
 
   vault_root = "secret/dm/square/${var.deploy_name}/${var.env_name}"
 

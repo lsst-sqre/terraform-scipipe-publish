@@ -43,10 +43,6 @@ variable "tls_key_path" {
   description = "wildcard tls private key."
 }
 
-variable "tls_dhparam_path" {
-  description = "tls dhparam."
-}
-
 variable "ingress_ip" {
   description = "external ip address of nginx ingress service"
 }
@@ -57,7 +53,6 @@ locals {
 
   fqdn = "${local.dns_prefix}${var.service_name}.${var.domain_name}"
 
-  tls_crt     = "${file(var.tls_crt_path)}"
-  tls_key     = "${file(var.tls_key_path)}"
-  tls_dhparam = "${file(var.tls_dhparam_path)}"
+  tls_crt = "${file(var.tls_crt_path)}"
+  tls_key = "${file(var.tls_key_path)}"
 }
