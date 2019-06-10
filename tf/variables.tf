@@ -67,16 +67,23 @@ variable "gke_version" {
   default     = "latest"
 }
 
+data "vault_generic_secret" "grafana_oauth" {
+  path = "${local.vault_root}/grafana_oauth"
+}
+
 variable "grafana_oauth_client_id" {
   description = "github oauth Client ID for grafana"
+  default     = ""
 }
 
 variable "grafana_oauth_client_secret" {
   description = "github oauth Client Secret for grafana."
+  default     = ""
 }
 
 variable "grafana_oauth_team_ids" {
   description = "github team id (integer value treated as string)"
+  default     = "1936535"
 }
 
 variable "grafana_admin_user" {
@@ -119,4 +126,10 @@ locals {
   tls_crt     = "${file(var.tls_crt_path)}"
   tls_key     = "${file(var.tls_key_path)}"
   tls_dhparam = "${file(var.tls_dhparam_path)}"
+
+  vault_root = "secret/dm/square/${var.deploy_name}/${var.env_name}"
+
+  grafana_oauth               = "${data.vault_generic_secret.grafana_oauth.data}"
+  grafana_oauth_client_id     = "${var.grafana_oauth_client_id != "" ? var.grafana_oauth_client_id : local.grafana_oauth["client_id"]}"
+  grafana_oauth_client_secret = "${var.grafana_oauth_client_secret != "" ? var.grafana_oauth_client_secret : local.grafana_oauth["client_secret"]}"
 }
