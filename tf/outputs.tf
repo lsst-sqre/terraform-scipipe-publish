@@ -87,3 +87,14 @@ output "EUPS_TAG_ADMIN_AWS_SECRET_ACCESS_KEY" {
   sensitive = true
   value     = "${module.pkgroot.EUPS_TAG_ADMIN_AWS_SECRET_ACCESS_KEY}"
 }
+
+output "grafana_admin_pass" {
+  description = "grafana admin user account password."
+  sensitive   = true
+  value       = "${local.grafana_admin_pass}"
+}
+
+output "grafana_admin_user" {
+  description = "name of the grafana admin user account."
+  value       = "${local.grafana_admin_user}"
+}

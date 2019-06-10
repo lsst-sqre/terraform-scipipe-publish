@@ -33,8 +33,8 @@ data "template_file" "prometheus_operator_values" {
   vars {
     client_id                = "${local.grafana_oauth_client_id}"
     client_secret            = "${local.grafana_oauth_client_secret}"
-    grafana_admin_pass       = "${var.grafana_admin_pass}"
-    grafana_admin_user       = "${var.grafana_admin_user}"
+    grafana_admin_pass       = "${local.grafana_admin_pass}"
+    grafana_admin_user       = "${local.grafana_admin_user}"
     grafana_fqdn             = "${local.grafana_fqdn}"
     grafana_secret_name      = "${kubernetes_secret.prometheus_tls.metadata.0.name}"
     prometheus_k8s_namespace = "${kubernetes_namespace.prometheus.metadata.0.name}"

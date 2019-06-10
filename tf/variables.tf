@@ -86,13 +86,12 @@ variable "grafana_oauth_team_ids" {
   default     = "1936535"
 }
 
-variable "grafana_admin_user" {
-  description = "grafana admin account name."
-  default     = "admin"
-}
+resource "random_string" "grafana_admin_pass" {
+  length = 20
 
-variable "grafana_admin_pass" {
-  description = "grafana admin account passphrase."
+  keepers = {
+    host = "${module.gke.host}"
+  }
 }
 
 variable "prometheus_oauth_github_org" {
@@ -132,4 +131,7 @@ locals {
   grafana_oauth               = "${data.vault_generic_secret.grafana_oauth.data}"
   grafana_oauth_client_id     = "${var.grafana_oauth_client_id != "" ? var.grafana_oauth_client_id : local.grafana_oauth["client_id"]}"
   grafana_oauth_client_secret = "${var.grafana_oauth_client_secret != "" ? var.grafana_oauth_client_secret : local.grafana_oauth["client_secret"]}"
+
+  grafana_admin_pass = "${random_string.grafana_admin_pass.result}"
+  grafana_admin_user = "admin"
 }
