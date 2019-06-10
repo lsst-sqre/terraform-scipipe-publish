@@ -68,12 +68,12 @@ data "vault_generic_secret" "grafana_oauth" {
 }
 
 variable "grafana_oauth_client_id" {
-  description = "github oauth Client ID for grafana"
+  description = "github oauth Client ID for grafana. (default: vault)"
   default     = ""
 }
 
 variable "grafana_oauth_client_secret" {
-  description = "github oauth Client Secret for grafana."
+  description = "github oauth Client Secret for grafana. (default: vault)"
   default     = ""
 }
 
@@ -95,12 +95,12 @@ data "vault_generic_secret" "prometheus_oauth" {
 }
 
 variable "prometheus_oauth_client_id" {
-  description = "github oauth client id"
+  description = "github oauth client id. (default: vault)"
   default     = ""
 }
 
 variable "prometheus_oauth_client_secret" {
-  description = "github oauth client secret"
+  description = "github oauth client secret. (default: vault)"
   default     = ""
 }
 
