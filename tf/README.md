@@ -51,7 +51,10 @@
 | EUPS\_TAG\_ADMIN\_AWS\_ACCESS\_KEY\_ID |  |
 | EUPS\_TAG\_ADMIN\_AWS\_SECRET\_ACCESS\_KEY |  |
 | EUPS\_TAG\_ADMIN\_USER |  |
+| eups\_url | base url of eups pkgroot(s). |
 | grafana\_admin\_pass | grafana admin user account password. |
 | grafana\_admin\_user | name of the grafana admin user account. |
+| grafana\_url | url of grafana service. |
+| prometheus\_url | url of prometheus dashboard. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
