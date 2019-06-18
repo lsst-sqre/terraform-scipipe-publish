@@ -98,3 +98,18 @@ output "grafana_admin_user" {
   description = "name of the grafana admin user account."
   value       = "${local.grafana_admin_user}"
 }
+
+output "eups_url" {
+  description = "base url of eups pkgroot(s)."
+  value       = "https://${module.pkgroot.fqdn}"
+}
+
+output "grafana_url" {
+  description = "url of grafana service."
+  value       = "https://${local.grafana_fqdn}"
+}
+
+output "prometheus_url" {
+  description = "url of prometheus dashboard."
+  value       = "https://${local.prometheus_fqdn}"
+}
