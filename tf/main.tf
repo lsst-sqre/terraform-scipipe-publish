@@ -80,8 +80,8 @@ module "pkgroot" {
 
   pkgroot_storage_size = "${var.pkgroot_storage_size}"
 
-  tls_crt    = "${var.tls_crt}"
-  tls_key    = "${var.tls_key}"
+  tls_crt    = "${local.tls_crt}"
+  tls_key    = "${local.tls_key}"
   ingress_ip = "${local.nginx_ingress_ip}"
 }
 
