@@ -54,7 +54,9 @@
 | eups\_url | base url of eups pkgroot(s). |
 | grafana\_admin\_pass | grafana admin user account password. |
 | grafana\_admin\_user | name of the grafana admin user account. |
-| grafana\_url | url of grafana service. |
+| grafana\_fqdn | fqdn of grafana service. |
+| grafana\_url | url of grafana dashboard. |
+| prometheus\_fqdn | fqdn of prometheus service. |
 | prometheus\_url | url of prometheus dashboard. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
