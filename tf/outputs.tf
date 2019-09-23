@@ -104,9 +104,19 @@ output "eups_url" {
   value       = "https://${module.pkgroot.fqdn}"
 }
 
+output "grafana_fqdn" {
+  description = "fqdn of grafana service."
+  value       = "${local.grafana_fqdn}"
+}
+
 output "grafana_url" {
-  description = "url of grafana service."
+  description = "url of grafana dashboard."
   value       = "https://${local.grafana_fqdn}"
+}
+
+output "prometheus_fqdn" {
+  description = "fqdn of prometheus service."
+  value       = "${local.prometheus_fqdn}"
 }
 
 output "prometheus_url" {
