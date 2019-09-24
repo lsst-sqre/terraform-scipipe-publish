@@ -48,7 +48,7 @@ resource "kubernetes_deployment" "pkgroot" {
       spec {
         container {
           name              = "apache"
-          image             = "eboraas/apache"
+          image             = "${var.www_image}"
           image_pull_policy = "Always"
 
           port {
