@@ -47,6 +47,11 @@ variable "ingress_ip" {
   description = "external ip address of nginx ingress service"
 }
 
+variable "www_image" {
+  description = "web server docker image."
+  default     = "lsstsqre/apache:20190924"
+}
+
 locals {
   # remove "<env>-" prefix for production
   dns_prefix = "${replace("${var.env_name}-", "prod-", "")}"
