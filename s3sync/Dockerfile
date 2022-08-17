@@ -1,4 +1,4 @@
-FROM rockylinux:8
+FROM almalinux:8
 
 #ARG AWSCLI_VER=1.25.53
 # I clearly see the 1.25 series on Pypi, but pip3 won't find anything later
