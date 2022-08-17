@@ -1,14 +1,19 @@
-FROM centos:7
+FROM rockylinux:8
 
-ARG AWSCLI_VER=1.14.61
+#ARG AWSCLI_VER=1.25.53
+# I clearly see the 1.25 series on Pypi, but pip3 won't find anything later
+# than 1.24.10 (as of 17 Aug 2022).  Don't know why.
+# 1.24.10 was released May 27, 2022
+ARG AWSCLI_VER=1.24.10
 
 USER root
 RUN yum update -y
-RUN yum install -y epel-release
-RUN yum install -y python-pip
-RUN pip install awscli=="${AWSCLI_VER}" --upgrade --no-cache-dir
+RUN yum install -y python3.9 python3-pip
+RUN pip3 install --upgrade pip setuptools wheel
+RUN pip3 install awscli=="${AWSCLI_VER}" --upgrade --no-cache-dir
 
-RUN yum -y swap -- remove fakesystemd -- install systemd systemd-libs
+RUN yum -y swap fakesystemd systemd
+RUN yum -y install systemd-libs
 # XXX masking these units seems to no longer be necessary?
 #RUN systemctl mask dev-mqueue.mount dev-hugepages.mount \
 #    systemd-remount-fs.service sys-kernel-config.mount \
