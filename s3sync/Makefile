@@ -1,2 +1,3 @@
+DOCKER ?= "docker"
 all:
-	docker build -t lsstsqre/s3sync:latest .
+	$(DOCKER) build -t lsstsqre/s3sync:latest .
