@@ -8,7 +8,8 @@ ARG AWSCLI_VER=1.24.10
 
 USER root
 RUN yum update -y
-RUN yum install -y python3.9 python3-pip cronie
+RUN yum install -y python3.9 python3-pip cronie mailx
+RUN alternatives --set python3 /usr/bin/python3.9
 RUN pip3 install awscli=="${AWSCLI_VER}" --upgrade --no-cache-dir
 
 COPY scripts/crontab /etc/crontab
